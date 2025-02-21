@@ -38,23 +38,23 @@ public class Week1 implements IWindowListener {
 		//Run the window
 		window.run();
 	}
+
 	
-	public void draw() { // draw is called every frame.
+	public void init() { // Run when the window is launched
+		new ShaderLibrary(DIRECTORY); // Create a singleton instance of the shader library, pointing to the directory.
+		scene = new Scene(screenWidth, screenHeight); // Instantiate the scene.
 		
 		//Set the clear colour - think of it as the background colour.
 		glClearColor(0.13f, 0.21f, 0.33f, 1.0f); // Unity blue
-		
+	}		
+	
+	public void draw() { // draw is called every frame.
+				
 		//clear the color buffer
 		glClear(GL_COLOR_BUFFER_BIT);
 		
 		scene.draw(); // Call the draw function on the scene
 	}
-	
-	public void init() { // Run when the window is launched
-		new ShaderLibrary(DIRECTORY); // Create a singleton instance of the shader library, pointing to the directory.
-		scene = new Scene(screenWidth, screenHeight); // Instantiate the scene.
-	}		
-	
 	@Override
 	// Control what happens when the screen is resized - generally you just want to adjust the viewport.
 	public void resize(int width, int height) {
