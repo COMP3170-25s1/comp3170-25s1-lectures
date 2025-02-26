@@ -27,6 +27,9 @@ public class Scene {
 
 	private int screenWidth;
 	private int screenHeight;
+	
+	private float triWidth = 2.0f;
+	private float triHeight = 2.0f;
 
 	public Scene(int width, int height) {
 
@@ -42,10 +45,13 @@ public class Scene {
 		// vertices of a triangle as (x,y) pairs
 		// @formatter:off
 		
+		float x = triWidth/2;
+		float y = triHeight/2;
+		
 		vertices = new Vector4f[] {
-				new Vector4f(-0.9f,-0.9f,0.0f,1.0f), // Left
-				new Vector4f(0.9f,-0.9f,0.0f,1.0f), // Right
-				new Vector4f(0.0f,0.9f,0.0f,1.0f), // Top
+				new Vector4f(-x,-y,0.0f,1.0f), // Left
+				new Vector4f(x,-y,0.0f,1.0f), // Right
+				new Vector4f(0.0f,y,0.0f,1.0f), // Top
 		};
 		// @formatter: On
 		
@@ -64,7 +70,7 @@ public class Scene {
 		shader.setAttribute("a_position", vertexBuffer);
 
 		// write the colour value into the u_colour uniform
-		Vector3f colour = new Vector3f(1.0f,1.0f,0.0f); // Yellow
+		Vector3f colour = new Vector3f(0.0f,0.0f,0.0f); // Black
 		shader.setUniform("u_colour", colour);
 		
 		// pass the size of the screen into the shader
