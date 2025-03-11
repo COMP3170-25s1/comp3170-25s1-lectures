@@ -9,6 +9,7 @@ import org.joml.Matrix4f;
 import comp3170.GLBuffers;
 import comp3170.Shader;
 import comp3170.ShaderLibrary;
+import static comp3170.Math.TAU;
 
 import static org.lwjgl.opengl.GL15.glDrawElements;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
@@ -31,6 +32,11 @@ public class House {
 	private int colourBuffer;
 	
 	private Shader shader;
+	
+	private Matrix4f modelMatrix = new Matrix4f();
+	private Matrix4f transMatrix = new Matrix4f();
+	private Matrix4f rotMatrix = new Matrix4f();
+	private Matrix4f scalMatrix = new Matrix4f();
 	
 	// private Vector3f colour = new Vector3f(1.0f, 0.7f, 1.0f); // LILAC - No longer used now we're doing vertex colours
 	
@@ -74,17 +80,33 @@ public class House {
 		indexBuffer = GLBuffers.createIndexBuffer(indices);
 		colourBuffer = GLBuffers.createBuffer(colours);
 		
+		Vector3f offset = new Vector3f(0.25f,0.0f, 0.0f);
+		float scale = 0.1f;
+		float rotation = TAU/3;
+		
+		// Using our methods:
+		//translationMatrix(offset, transMatrix);
+		//scaleMatrix(scale, scalMatrix);
+		//rotationMatrix(rotation, rotMatrix);
+		//modelMatrix.mul(transMatrix).mul(scalMatrix).mul(rotMatrix); // T R S order
+		
+		// Using JOML methods:
+		modelMatrix.translate(offset).rotateZ(rotation).scale(scale); // T R S order
+		
+
 	}
 	
 	public void draw() {
 		shader.enable();
 		
 		shader.setAttribute("a_position", vertexBuffer);
+		shader.setUniform("u_modelMatrix", modelMatrix);
+		
 		shader.setAttribute("a_colour",colourBuffer);
+		
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 
 		glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
-		
 	}
 	
 	
@@ -129,5 +151,4 @@ public class House {
 		
 		return dest;
 	}
-
 }
