@@ -11,5 +11,8 @@ public class Scene {
 	public void draw() {
 		house.draw();
 	}
-
+	
+	public void update(float deltaTime) {
+		house.update(deltaTime);
+	}
 }

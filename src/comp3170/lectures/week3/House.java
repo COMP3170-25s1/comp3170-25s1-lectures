@@ -40,6 +40,11 @@ public class House {
 	
 	// private Vector3f colour = new Vector3f(1.0f, 0.7f, 1.0f); // LILAC - No longer used now we're doing vertex colours
 	
+	final private Vector3f OFFSET = new Vector3f(0.25f,0.0f, 0.0f);
+	final private float MOVEMENT_SPEED = 1f;
+	final private float SCALE_RATE = 2f;
+	final private float ROTATION_RATE = TAU/12;
+	
 	public House() {
 		
 		// compile shader 
@@ -80,10 +85,6 @@ public class House {
 		indexBuffer = GLBuffers.createIndexBuffer(indices);
 		colourBuffer = GLBuffers.createBuffer(colours);
 		
-		Vector3f offset = new Vector3f(0.25f,0.0f, 0.0f);
-		float scale = 0.1f;
-		float rotation = TAU/3;
-		
 		// Using our methods:
 		//translationMatrix(offset, transMatrix);
 		//scaleMatrix(scale, scalMatrix);
@@ -91,9 +92,14 @@ public class House {
 		//modelMatrix.mul(transMatrix).mul(scalMatrix).mul(rotMatrix); // T R S order
 		
 		// Using JOML methods:
-		modelMatrix.translate(offset).rotateZ(rotation).scale(scale); // T R S order
+		modelMatrix.translate(OFFSET).scale(SCALE_RATE); // T R S order
+	}
+	
+	public void update(float deltaTime) {
 		
-
+		float movement = MOVEMENT_SPEED * deltaTime;
+		float rotation = ROTATION_RATE * deltaTime;
+		modelMatrix.translate(0.0f,movement,0.0f).rotateZ(rotation);
 	}
 	
 	public void draw() {

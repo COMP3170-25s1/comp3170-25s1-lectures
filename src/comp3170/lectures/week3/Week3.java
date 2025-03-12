@@ -24,6 +24,7 @@ public class Week3 implements IWindowListener{
 	final private File DIRECTORY = new File("src/comp3170/lectures/week3/shaders");
 	
 	private Scene scene;
+	private long oldTime;
 	
 	public Week3() throws OpenGLException {
 		
@@ -46,12 +47,22 @@ public class Week3 implements IWindowListener{
 		glClearColor(clearColour.x, clearColour.y, clearColour.z, clearColour.w);
 		
 		scene = new Scene();
+		
+		oldTime = System.currentTimeMillis();
 	}
 
 	@Override
 	public void draw() {
+		update();
 		glClear(GL_COLOR_BUFFER_BIT);
 		scene.draw();
+	}
+	
+	public void update() {
+		long time = System.currentTimeMillis();
+		float deltaTime = (time - oldTime) / 1000f;
+		oldTime = time;
+		scene.update(deltaTime);
 	}
 
 	@Override
