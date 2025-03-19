@@ -1,18 +1,47 @@
 package comp3170.lectures.week4;
 
-public class Scene {
+import org.joml.Vector3f;
+
+import comp3170.InputManager;
+import comp3170.SceneObject;
+
+public class Scene extends SceneObject {
 	
-	private Fish fish;
+	public static Scene theScene;
 	
+	private Fish fish1;
+	private Fish fish2;
+	private Camera camera;
+	
+	private Vector3f fish1Offset = new Vector3f(5.0f,0.0f, 0.0f);
+	private Vector3f fish1Colour = new Vector3f(0.5f,0.0f,0.0f); // RED
+	private Vector3f fish2Offset = new Vector3f(-5.0f,5.0f, 0.0f);
+	private Vector3f fish2Colour = new Vector3f(0.0f,0.5f,0.0f); // GREEN
+
 	public Scene () {
-		fish = new Fish();
+		
+		theScene = this;
+		
+		fish1 = new Fish(fish1Colour);
+		fish1.setParent(this);
+		fish1.getMatrix().translateLocal(fish1Offset);
+		
+		fish2 = new Fish(fish2Colour);
+		fish2.setParent(this);
+		fish2.getMatrix().translateLocal(fish2Offset);
+		
+		camera = new Camera();
+		camera.setParent(this);
+		// camera.getMatrix().scale(0.25f);
 	}
 	
-	public void draw() {
-		fish.draw();
+	public Camera GetCamera() {
+		return camera;
 	}
-	
-	public void update(float deltaTime) {
-		fish.update(deltaTime);
+
+	public void update(InputManager input, float deltaTime) {
+		fish1.update(deltaTime);
+		fish2.update(deltaTime);
+		camera.update(input, deltaTime);
 	}
 }
