@@ -23,7 +23,7 @@ public class Camera extends SceneObject {
 	
 	private Vector3f position;
 	private float angle;
-	private float zoom = 1.0f;
+	private float zoom = 10.0f;
 	private float aspect; // Coming back t this later
 	
 	private Vector4f[] vertices;
@@ -60,7 +60,7 @@ public class Camera extends SceneObject {
 	}
 	
 	public Matrix4f GetProjectionMatrix(Matrix4f dest) {
-		return projectionMatrix.get(dest);
+		return projectionMatrix.invert(dest);
 	}
 	
 	
@@ -75,25 +75,24 @@ public class Camera extends SceneObject {
 		// glDrawArrays(GL_LINE_LOOP, 0, vertices.length);
 	}
 	
-	private float MOVE_SPEED = 0.5f;
-	private float ZOOM_SPEED = 0.25f;
+	private final float MOVE_SPEED = 0.5f;
+	private final float ZOOM_SPEED = 0.25f;
+	
+	private float xMove = 0f;
+	private float yMove = 0f;
 	
 	public void update(InputManager input, float deltaTime) {
 		if (input.isKeyDown(GLFW_KEY_W)) {
-			Vector3f translation = new Vector3f(0, MOVE_SPEED * deltaTime, 0);
-			getMatrix().translateLocal(translation);
+			yMove += MOVE_SPEED * deltaTime;
 		}
 		if (input.isKeyDown(GLFW_KEY_S)) {
-			Vector3f translation = new Vector3f(0, -MOVE_SPEED * deltaTime, 0);
-			getMatrix().translateLocal(translation);
+			yMove -= MOVE_SPEED * deltaTime;
 		}
 		if (input.isKeyDown(GLFW_KEY_A)) {
-			Vector3f translation = new Vector3f(-MOVE_SPEED * deltaTime, 0, 0);
-			getMatrix().translateLocal(translation);
+			xMove -= MOVE_SPEED * deltaTime;
 		}
 		if (input.isKeyDown(GLFW_KEY_D)) {
-			Vector3f translation = new Vector3f(MOVE_SPEED * deltaTime, 0, 0);
-			getMatrix().translateLocal(translation);
+			xMove += MOVE_SPEED * deltaTime;
 		}
 		
 		if (input.isKeyDown(GLFW_KEY_UP)) {
@@ -104,6 +103,7 @@ public class Camera extends SceneObject {
 			zoom -= ZOOM_SPEED * deltaTime;
 		}
 		
+		getMatrix().identity().translate(new Vector3f(xMove,yMove,0));
 		projectionMatrix.scaling(zoom,zoom,1.0f);
 		
 	}
