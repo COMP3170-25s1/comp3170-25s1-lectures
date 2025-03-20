@@ -34,11 +34,8 @@ public class Eye extends SceneObject {
 	private Shader shader;
 	
 	private int nSides = 50;
-	private float size;
 	
-	public Eye(float size) {
-		
-		this.size = size;
+	public Eye() {
 		createMesh();
 		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);	
 	}
@@ -50,8 +47,8 @@ public class Eye extends SceneObject {
 		
 		for (int i = 1; i <= nSides; i ++) {
 			double angle = (i * (TAU) / (nSides));
-			float x = (float) (size * Math.cos(angle));
-			float y = (float) (size * Math.sin(angle));
+			float x = (float) (Math.cos(angle));
+			float y = (float) (Math.sin(angle));
 			Vector4f vert = new Vector4f(x, y, 0, 1);
 			vertices[i] = vert;
 		}

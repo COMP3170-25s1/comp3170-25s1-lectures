@@ -19,9 +19,8 @@ import static org.lwjgl.opengl.GL15.GL_UNSIGNED_INT;
 
 public class Fish extends SceneObject {
 	
-	// Define which shaders are to be used
-	final private String VERTEX_SHADER = "vertex.glsl";
-	final private String FRAGMENT_SHADER = "fragment.glsl";
+	final private String VERTEX_SHADER = "vertex_vertColouring.glsl";
+	final private String FRAGMENT_SHADER = "fragment_vertColouring.glsl";
 	
 	private Vector4f[] vertices; // An array of points that make up the house
 	private int vertexBuffer;
@@ -30,27 +29,24 @@ public class Fish extends SceneObject {
 	
 	private Vector3f[] colours;
 	private int colourBuffer;
-	
-	private Shader shader;
-		
 	private Vector3f baseColour = new Vector3f(1.0f,1.0f,1.0f);
 	
+	private Shader shader;
+			
 	final private float MOVEMENT_SPEED = 1f;
-	final private float SIZE = 0.05f;
 	final private float ROTATION_RATE = TAU/12;
 	
-	// Child objects
+	// Eye variables
 	private Eye eye;
+	private Vector3f eyePosition = new Vector3f(0.2f,0.3f,0.0f);
+	private float eyeScale = 0.2f;
 	
 	public Fish(Vector3f baseColour) {
-		
 		this.baseColour = baseColour;
 		
 		// compile shader 
 		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
-		
-		// vertices as (x,y) pairs
-		
+
 		// @formatter:off
 		
 		vertices = new Vector4f[] {
@@ -91,17 +87,13 @@ public class Fish extends SceneObject {
 		vertexBuffer = GLBuffers.createBuffer(vertices);
 		indexBuffer = GLBuffers.createIndexBuffer(indices);
 		colourBuffer = GLBuffers.createBuffer(colours);
-		
-		// getMatrix().scale(SIZE); // T (R) S order
-		
-		Vector3f eyeOffset = new Vector3f(0.2f,0.3f,0.0f);
-		eye = new Eye(0.20f);
+
+		eye = new Eye();
 		eye.setParent(this);
-		eye.getMatrix().translate(eyeOffset);
+		eye.getMatrix().translate(eyePosition).scale(eyeScale);
 	}
 	
 	public void update(float deltaTime) {
-		
 		float movement = MOVEMENT_SPEED * deltaTime;
 		float rotation = ROTATION_RATE * deltaTime;
 		getMatrix().translate(0.0f,movement,0.0f).rotateZ(rotation);
@@ -112,12 +104,10 @@ public class Fish extends SceneObject {
 		
 		shader.setAttribute("a_position", vertexBuffer);
 		shader.setUniform("u_mvpMatrix", mvpMatrix);
-		
 		shader.setUniform("u_baseColour", baseColour);
 		shader.setAttribute("a_colour",colourBuffer);
 		
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-
 		glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
 	}
 }

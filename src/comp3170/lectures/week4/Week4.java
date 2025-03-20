@@ -21,11 +21,11 @@ public class Week4 implements IWindowListener{
 	
 	private int screenWidth = 1000;
 	private int screenHeight = 1000;
-	private Vector4f clearColour = new Vector4f(0.0f, 0.0f, 0.5f, 1.0f);
+	private Vector4f clearColour = new Vector4f(0.2f, 0.25f, 0.5f, 1.0f); // OCEAN BLUE
 	
-	final private File DIRECTORY = new File("src/comp3170/lectures/common/shaders");
+	final private File DIRECTORY = new File("src/comp3170/lectures/week4/shaders");
 	
-	private Scene scene;
+	// Input and time
 	private long oldTime;
 	private InputManager input;
 	private Window window;
@@ -34,20 +34,17 @@ public class Week4 implements IWindowListener{
 	private Matrix4f viewMatrix = new Matrix4f();
 	private Matrix4f projectionMatrix = new Matrix4f();
 	private Matrix4f mvpMatrix = new Matrix4f();
-	
+
+	// The Scene
+	private Scene scene;
+
 	public Week4() throws OpenGLException {
-		
-		// Create a window with a title, a size and a listener (this)
 		window = new Window("Week 4", screenWidth, screenHeight, this);
-		
-		// Start running the window
 		window.run();
-		window.setResizable(true);
 	}
 
 	public static void main(String[] args) throws OpenGLException {
 		new Week4();
-
 	}
 
 	@Override
@@ -61,7 +58,6 @@ public class Week4 implements IWindowListener{
 		
 		oldTime = System.currentTimeMillis();
 	}
-
 
 	@Override
 	public void draw() {
@@ -94,5 +90,4 @@ public class Week4 implements IWindowListener{
 	public void close() {
 		
 	}
-
 }

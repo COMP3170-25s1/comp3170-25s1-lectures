@@ -9,6 +9,7 @@ public class Scene extends SceneObject {
 	
 	public static Scene theScene;
 	
+	// NOTE: In a real project, I'd probably want to create something to hold all these fish. Remember that example code like this is fit for examples and demonstration, not optimised for a full scale project.
 	private Fish fish1;
 	private Fish fish2;
 	private Camera camera;
@@ -32,7 +33,6 @@ public class Scene extends SceneObject {
 		
 		camera = new Camera();
 		camera.setParent(this);
-		// camera.getMatrix().scale(0.25f);
 	}
 	
 	public Camera GetCamera() {
