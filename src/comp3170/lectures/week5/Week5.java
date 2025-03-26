@@ -17,7 +17,7 @@ import comp3170.OpenGLException;
 import comp3170.ShaderLibrary;
 import comp3170.Window;
 
-public class Week4 implements IWindowListener{
+public class Week5 implements IWindowListener{
 	
 	private int screenWidth = 1000;
 	private int screenHeight = 1000;
@@ -38,13 +38,14 @@ public class Week4 implements IWindowListener{
 	// The Scene
 	private Scene scene;
 
-	public Week4() throws OpenGLException {
-		window = new Window("Week 4", screenWidth, screenHeight, this);
+	public Week5() throws OpenGLException {
+		window = new Window("Week 5", screenWidth, screenHeight, this);
+		window.setResizable(true);
 		window.run();
 	}
 
 	public static void main(String[] args) throws OpenGLException {
-		new Week4();
+		new Week5();
 	}
 
 	@Override
@@ -68,7 +69,7 @@ public class Week4 implements IWindowListener{
 		cam.GetViewMatrix(viewMatrix);
 		cam.GetProjectionMatrix(projectionMatrix);
 		mvpMatrix.identity();
-		mvpMatrix.mul(viewMatrix).mul(projectionMatrix);
+		mvpMatrix.set(projectionMatrix).mul(viewMatrix);
 		scene.draw(mvpMatrix);
 	}
 	
@@ -83,7 +84,8 @@ public class Week4 implements IWindowListener{
 
 	@Override
 	public void resize(int width, int height) {
-		
+		System.out.println(width + " x " + height);
+		// glViewport(0,0,width,height);
 	}
 
 	@Override

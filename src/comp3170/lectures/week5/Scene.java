@@ -4,6 +4,7 @@ import org.joml.Vector3f;
 
 import comp3170.InputManager;
 import comp3170.SceneObject;
+import static comp3170.Math.TAU;
 
 public class Scene extends SceneObject {
 	
@@ -13,11 +14,14 @@ public class Scene extends SceneObject {
 	private Fish fish1;
 	private Fish fish2;
 	private Camera camera;
+	private Gem gem;
 	
 	private Vector3f fish1Offset = new Vector3f(5.0f,0.0f, 0.0f);
 	private Vector3f fish1Colour = new Vector3f(0.5f,0.0f,0.0f); // RED
 	private Vector3f fish2Offset = new Vector3f(-5.0f,5.0f, 0.0f);
 	private Vector3f fish2Colour = new Vector3f(0.0f,0.5f,0.0f); // GREEN
+	
+	private Vector3f gemColour = new Vector3f(1.0f,1.0f,1.0f);
 
 	public Scene () {
 		
@@ -31,8 +35,12 @@ public class Scene extends SceneObject {
 		fish2.setParent(this);
 		fish2.getMatrix().translateLocal(fish2Offset);
 		
+		gem = new Gem(gemColour, 1, 8);
+		gem.setParent(this);
+		
 		camera = new Camera();
 		camera.setParent(this);
+		
 	}
 	
 	public Camera GetCamera() {
@@ -43,5 +51,6 @@ public class Scene extends SceneObject {
 		fish1.update(deltaTime);
 		fish2.update(deltaTime);
 		camera.update(input, deltaTime);
+		gem.update(input, deltaTime);
 	}
 }

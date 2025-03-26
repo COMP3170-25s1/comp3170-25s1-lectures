@@ -13,7 +13,11 @@ import static comp3170.Math.TAU;
 
 import static org.lwjgl.opengl.GL15.glDrawElements;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
+import static org.lwjgl.opengl.GL15.glPolygonMode;
 import static org.lwjgl.opengl.GL15.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL15.GL_FRONT_AND_BACK;
+import static org.lwjgl.opengl.GL15.GL_LINE;
+import static org.lwjgl.opengl.GL15.GL_FILL;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_UNSIGNED_INT;
 
@@ -58,8 +62,7 @@ public class Fish extends SceneObject {
 				
 				new Vector4f(0.8f, 0.2f, 0.0f, 1.0f),   // P4
 				new Vector4f(-0.8f, 0.2f, 0.0f, 1.0f),  // P5
-				new Vector4f(0.f, 1.0f, 0.0f, 1.0f),    // P6	
-			
+				new Vector4f(0.f, 1.0f, 0.0f, 1.0f),    // P6
 		};
 		
 		indices = new int[] {
@@ -69,6 +72,7 @@ public class Fish extends SceneObject {
 				2, 4, 3,
 				3, 4, 5,
 				4, 5, 6,
+				
 		};
 		
 		colours = new Vector3f[] {
@@ -107,6 +111,7 @@ public class Fish extends SceneObject {
 		shader.setUniform("u_baseColour", baseColour);
 		shader.setAttribute("a_colour",colourBuffer);
 		
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 		glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
 	}

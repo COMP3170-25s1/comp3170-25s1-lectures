@@ -1,7 +1,10 @@
 package comp3170.lectures.week5;
 
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
 import static org.lwjgl.opengl.GL11.GL_LINES;
+import static org.lwjgl.opengl.GL11.GL_POINT;
+import static org.lwjgl.opengl.GL11.GL_FILL;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL11.glPolygonMode;
@@ -75,6 +78,7 @@ public class Eye extends SceneObject {
 
 		shader.setUniform("u_colour", solidColour);
 		
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINES);
 		glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
