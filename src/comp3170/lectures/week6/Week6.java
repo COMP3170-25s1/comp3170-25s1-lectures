@@ -23,7 +23,7 @@ public class Week6 implements IWindowListener{
 	private int screenHeight = 800;
 	private Vector4f clearColour = new Vector4f(0.1f, 0.1f, 0.1f, 1.0f); // GRIMDARK
 	
-	final private File DIRECTORY = new File("src/comp3170/lectures/week5/shaders"); // Using week 5 shaders because no changes made.
+	final private File DIRECTORY = new File("src/comp3170/lectures/week6/shaders");
 	
 	// Input and time
 	private long oldTime;

@@ -21,8 +21,8 @@ import static org.lwjgl.opengl.GL15.GL_UNSIGNED_INT;
 
 public class Gem extends SceneObject {
 	
-	final private String VERTEX_SHADER = "vertex_simple.glsl";
-	final private String FRAGMENT_SHADER = "fragment_simple.glsl";
+	final private String VERTEX_SHADER = "vertex.glsl";
+	final private String FRAGMENT_SHADER = "fragment.glsl";
 	
 	private Vector4f[] vertices; // An array of points that make up the house
 	private int vertexBuffer;
