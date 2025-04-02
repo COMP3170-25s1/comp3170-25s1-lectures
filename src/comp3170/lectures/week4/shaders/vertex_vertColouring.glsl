@@ -8,7 +8,5 @@ out vec3 v_colour; // RGB to the fragment shader
 
 void main() {
 	gl_Position = u_mvpMatrix * a_position;
-	
-	// Pass the colour to the fragment shader
-	v_colour = a_colour;
+	v_colour = a_colour; // Pass the colour to the fragment shader
 }

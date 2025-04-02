@@ -4,7 +4,6 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.joml.Matrix4f;
 
-
 import comp3170.GLBuffers;
 import comp3170.SceneObject;
 import comp3170.Shader;
@@ -22,7 +21,7 @@ public class Fish extends SceneObject {
 	final private String VERTEX_SHADER = "vertex_vertColouring.glsl";
 	final private String FRAGMENT_SHADER = "fragment_vertColouring.glsl";
 	
-	private Vector4f[] vertices; // An array of points that make up the house
+	private Vector4f[] vertices;
 	private int vertexBuffer;
 	private int[] indices;
 	private int indexBuffer;
@@ -46,9 +45,16 @@ public class Fish extends SceneObject {
 		
 		// compile shader 
 		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
-
-		// @formatter:off
 		
+		createMesh();
+
+		eye = new Eye();
+		eye.setParent(this);
+		eye.getMatrix().translate(eyePosition).scale(eyeScale);
+	}
+	
+	private void createMesh() {
+		// @formatter:off
 		vertices = new Vector4f[] {
 				new Vector4f(-0.8f, -1.0f, 0.0f, 1.0f), // P0
 				new Vector4f(0.8f, -1.0f, 0.0f, 1.0f),  // P1
@@ -83,14 +89,10 @@ public class Fish extends SceneObject {
 				new Vector3f(0.4f, 0.4f, 0.15f),
 		};
 		// @formatter:on
-		
+
 		vertexBuffer = GLBuffers.createBuffer(vertices);
 		indexBuffer = GLBuffers.createIndexBuffer(indices);
 		colourBuffer = GLBuffers.createBuffer(colours);
-
-		eye = new Eye();
-		eye.setParent(this);
-		eye.getMatrix().translate(eyePosition).scale(eyeScale);
 	}
 	
 	public void update(float deltaTime) {
@@ -101,7 +103,6 @@ public class Fish extends SceneObject {
 	
 	public void drawSelf(Matrix4f mvpMatrix) {
 		shader.enable();
-		
 		shader.setAttribute("a_position", vertexBuffer);
 		shader.setUniform("u_mvpMatrix", mvpMatrix);
 		shader.setUniform("u_baseColour", baseColour);

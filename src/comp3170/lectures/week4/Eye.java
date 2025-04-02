@@ -30,11 +30,10 @@ public class Eye extends SceneObject {
 	private int indexBuffer;
 	
 	private Vector3f solidColour = new Vector3f(0.0f,0.0f,0.0f); // SOLID BLACK RGB
+	private int nSides = 50;
 
 	private Shader shader;
-	
-	private int nSides = 50;
-	
+		
 	public Eye() {
 		createMesh();
 		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);	
@@ -43,8 +42,7 @@ public class Eye extends SceneObject {
 	private void createMesh() {
 		vertices = new Vector4f[nSides+1];
 		
-		vertices[0] = new Vector4f(0,0,0,1);
-		
+		vertices[0] = new Vector4f(0,0,0,1);	
 		for (int i = 1; i <= nSides; i ++) {
 			double angle = (i * (TAU) / (nSides));
 			float x = (float) (Math.cos(angle));
@@ -55,15 +53,15 @@ public class Eye extends SceneObject {
 		
 		vertexBuffer = GLBuffers.createBuffer(vertices);	
 		
-		 indices = new int[nSides*3];
+		indices = new int[nSides*3];
 		                   
-		 int j = 0; 
-		 for (int i = 1; i <= nSides; i++) { 
-			 indices[j++] = 0;
-			 indices[j++] = i;
-			 indices[j++] = (i % nSides) + 1; // Wrap around
-		 }
-		 
+		int j = 0; 
+		for (int i = 1; i <= nSides; i++) { 
+		indices[j++] = 0;
+		indices[j++] = i;
+		indices[j++] = (i % nSides) + 1; // Wrap around
+		}
+		
 		indexBuffer = GLBuffers.createIndexBuffer(indices);
 	}
 	

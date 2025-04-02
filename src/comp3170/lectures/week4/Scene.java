@@ -6,10 +6,12 @@ import comp3170.InputManager;
 import comp3170.SceneObject;
 
 public class Scene extends SceneObject {
-	
 	public static Scene theScene;
 	
-	// NOTE: In a real project, I'd probably want to create something to hold all these fish. Remember that example code like this is fit for examples and demonstration, not optimised for a full scale project.
+	/* In a real project, you'd create something to hold all these fish.
+	Remember that example code like this is fit for examples and demonstration, 
+	not optimised for a full scale project.
+	*/
 	private Fish fish1;
 	private Fish fish2;
 	private Camera camera;
@@ -20,7 +22,6 @@ public class Scene extends SceneObject {
 	private Vector3f fish2Colour = new Vector3f(0.0f,0.5f,0.0f); // GREEN
 
 	public Scene () {
-		
 		theScene = this;
 		
 		fish1 = new Fish(fish1Colour);

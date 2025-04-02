@@ -17,7 +17,6 @@ public class Camera extends SceneObject {
 	public Camera() {
 	}
 	
-	
 	public Matrix4f GetViewMatrix(Matrix4f dest) {
 		viewMatrix = getMatrix();
 		return viewMatrix.invert(dest);
@@ -45,18 +44,15 @@ public class Camera extends SceneObject {
 		}
 		if (input.isKeyDown(GLFW_KEY_D)) {
 			xMove += MOVE_SPEED * deltaTime;
-		}
-		
+		}	
 		if (input.isKeyDown(GLFW_KEY_UP)) {
 			zoom -= ZOOM_SPEED * deltaTime;
-		}
-		
+		}	
 		if (input.isKeyDown(GLFW_KEY_DOWN)) {
 			zoom += ZOOM_SPEED * deltaTime;
 		}
 		
 		getMatrix().identity().translate(new Vector3f(xMove,yMove,0));
 		projectionMatrix.scaling(zoom,zoom,1.0f); // Doesn't work for non-uniform screens - why? Check Week 4 slides!
-		
 	}
 }
