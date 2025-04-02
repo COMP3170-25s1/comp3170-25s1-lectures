@@ -1,12 +1,12 @@
-package comp3170.lectures.week5;
+package comp3170.lectures.week6;
 
 import static org.lwjgl.opengl.GL15.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL15.GL_CULL_FACE;
+import static org.lwjgl.opengl.GL15.glEnable;
 import static org.lwjgl.opengl.GL15.glClear;
 import static org.lwjgl.opengl.GL15.glClearColor;
-import static org.lwjgl.opengl.GL15.glViewport;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
@@ -17,13 +17,13 @@ import comp3170.OpenGLException;
 import comp3170.ShaderLibrary;
 import comp3170.Window;
 
-public class Week5 implements IWindowListener{
+public class Week6 implements IWindowListener{
 	
-	private int screenWidth = 1000;
-	private int screenHeight = 1000;
-	private Vector4f clearColour = new Vector4f(0.2f, 0.25f, 0.5f, 1.0f); // OCEAN BLUE
+	private int screenWidth = 800;
+	private int screenHeight = 800;
+	private Vector4f clearColour = new Vector4f(0.1f, 0.1f, 0.1f, 1.0f); // GRIMDARK
 	
-	final private File DIRECTORY = new File("src/comp3170/lectures/week5/shaders");
+	final private File DIRECTORY = new File("src/comp3170/lectures/week5/shaders"); // Using week 5 shaders because no changes made.
 	
 	// Input and time
 	private long oldTime;
@@ -38,19 +38,20 @@ public class Week5 implements IWindowListener{
 	// The Scene
 	private Scene scene;
 
-	public Week5() throws OpenGLException {
-		window = new Window("Week 5", screenWidth, screenHeight, this);
-
-		window.setResizable(true);
+	public Week6() throws OpenGLException {
+		window = new Window("Week 6", screenWidth, screenHeight, this);
 		window.run();
 	}
 
 	public static void main(String[] args) throws OpenGLException {
-		new Week5();
+		new Week6();
 	}
 
 	@Override
 	public void init() {
+		
+		glEnable(GL_CULL_FACE);
+		
 		new ShaderLibrary(DIRECTORY);
 		
 		glClearColor(clearColour.x, clearColour.y, clearColour.z, clearColour.w);
@@ -80,13 +81,10 @@ public class Week5 implements IWindowListener{
 		oldTime = time;
 		scene.update(input, deltaTime);
 		input.clear();
-		
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		System.out.println(width + " x " + height);
-		// glViewport(0,0,width,height);
 	}
 
 	@Override

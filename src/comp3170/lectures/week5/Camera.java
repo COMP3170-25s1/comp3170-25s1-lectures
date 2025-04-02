@@ -12,7 +12,7 @@ import static comp3170.Math.TAU;
 
 public class Camera extends SceneObject {
 
-	private float zoom = 5.0f;
+	private float zoom = 2.0f;
 	private Matrix4f projectionMatrix = new Matrix4f();
 	private Matrix4f viewMatrix = new Matrix4f();
 

@@ -1,4 +1,4 @@
-package comp3170.lectures.week5;
+package comp3170.lectures.week6;
 
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -30,7 +30,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_UNSIGNED_INT;
 
-public class Gem extends SceneObject {
+public class Panel extends SceneObject {
 	
 	final private String VERTEX_SHADER = "vertex_simple.glsl";
 	final private String FRAGMENT_SHADER = "fragment_simple.glsl";
@@ -42,84 +42,54 @@ public class Gem extends SceneObject {
 
 	// Paramaters
 	private Vector3f baseColour = new Vector3f(1.0f,1.0f,1.0f);
-	private float height = 1f;
-	private int nSides = 4;
 	
 	private Shader shader;
 	
-	public Gem(Vector3f baseColour, float height, int nSides) {
+	public Panel(Vector3f baseColour) {
 		this.baseColour = baseColour;
-		this.height = height;
-		this.nSides = nSides;
 		
 		// compile shader 
 		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
 
 		// @formatter:off
 		
-		vertices = new Vector4f[2 + nSides];
+		vertices = new Vector4f[] {
+				new Vector4f (-1.0f, -1.0f, 0.1f, 1.0f),  // 0
+				new Vector4f (1.0f, -1.0f, 0.1f, 1.0f),	  // 1
+				new Vector4f (1.0f, 1.0f, 0.1f, 1.0f),	  // 2
+				new Vector4f (-1.0f, 1.0f, 0.1f, 1.0f),   // 3
+				
+				new Vector4f (-1.0f, -1.0f, -0.1f, 1.0f), // 4
+				new Vector4f (1.0f, -1.0f, -0.1f, 1.0f),  // 5
+				new Vector4f (1.0f, 1.0f, -0.1f, 1.0f),   // 6
+				new Vector4f (-1.0f, 1.0f, -0.1f, 1.0f),  // 7
+		};
 		
-		vertices[0] = new Vector4f(0.0f, height/2,0.0f, 1.0f);
-		vertices[vertices.length - 1] = new Vector4f(0.0f, -height/2,0.0f, 1.0f);
-		
-		// Starting at vertex 1
-		// first loop doing top
-		// second loop doing bottom
-		
-		for (int i = 1; i <= nSides; i ++)
-		{
-			double angle = (i * (TAU / nSides));
-			float x = (float) (Math.cos(angle));
-			float z = (float) (Math.sin(angle));
-			float y = 0.0f;
-			Vector4f vert = new Vector4f(x,y,z,1);
-			vertices[i] = vert;
-		}
-		
-		indices = new int[(nSides*2)*3];
-		
-		int j = 0;
-		for (int i = 1; i <= (nSides); i++) {
-			indices[j++] = 0;
-			indices[j++] = i;
-			indices[j++] = (i%nSides) + 1; // Wrap around
-
-		}
-		
-		int k = nSides*3;
-		for (int i = 1; i <= (nSides); i++) {
-			indices[k++] = vertices.length - 1;
-			indices[k++] = i;
-			indices[k++] = (i%nSides) + 1; // Wrap around
-			System.out.println(i);
-			System.out.println(i+1);
-		}
+		indices = new int[] {
+				
+				// Front
+				0, 1, 2,
+				0, 2, 3,
+				
+				// Back
+				4, 5, 6,
+				4, 6, 7,
+				
+				// Left Side
+				0, 3, 7,
+				0, 7, 4,
+				
+				// Right Side
+				1, 5, 6,
+				1, 6, 3,
+						
+		};
 		// @formatter:on
 		
 		vertexBuffer = GLBuffers.createBuffer(vertices);
 		indexBuffer = GLBuffers.createIndexBuffer(indices);
 	}
 	
-	private final float ROTATE_RATE = TAU/3;
-	private float yAngle = 0f;
-	private float xAngle = 0f;
-	
-	public void update(InputManager input, float deltaTime) {
-		if (input.isKeyDown(GLFW_KEY_W)) {
-			xAngle += ROTATE_RATE * deltaTime;
-		}
-		if (input.isKeyDown(GLFW_KEY_S)) {
-			xAngle -= ROTATE_RATE * deltaTime;
-		}
-		if (input.isKeyDown(GLFW_KEY_A)) {
-			yAngle -= ROTATE_RATE * deltaTime;
-		}
-		if (input.isKeyDown(GLFW_KEY_D)) {
-			yAngle += ROTATE_RATE * deltaTime;
-		}
-		
-		getMatrix().identity().rotateY(yAngle).rotateX(xAngle);
-	}
 	
 	public void drawSelf(Matrix4f mvpMatrix) {
 		shader.enable();

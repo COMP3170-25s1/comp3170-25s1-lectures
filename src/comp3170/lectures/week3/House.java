@@ -99,7 +99,7 @@ public class House {
 		
 		float movement = MOVEMENT_SPEED * deltaTime;
 		float rotation = ROTATION_RATE * deltaTime;
-		modelMatrix.translate(0.0f,movement,0.0f).rotateZ(rotation);
+		// modelMatrix.translate(0.0f,movement,0.0f).rotateZ(rotation);
 	}
 	
 	public void draw() {
