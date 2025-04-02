@@ -3,12 +3,10 @@ package comp3170.lectures.week3;
 import static org.lwjgl.opengl.GL15.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL15.glClear;
 import static org.lwjgl.opengl.GL15.glClearColor;
-import static org.lwjgl.opengl.GL15.glViewport;
-
-import java.io.File;
-import java.io.IOException;
 
 import org.joml.Vector4f;
+
+import java.io.File;
 
 import comp3170.IWindowListener;
 import comp3170.OpenGLException;
@@ -43,11 +41,9 @@ public class Week3 implements IWindowListener{
 	@Override
 	public void init() {
 		new ShaderLibrary(DIRECTORY);
-		
 		glClearColor(clearColour.x, clearColour.y, clearColour.z, clearColour.w);
 		
 		scene = new Scene();
-		
 		oldTime = System.currentTimeMillis();
 	}
 
@@ -67,12 +63,10 @@ public class Week3 implements IWindowListener{
 
 	@Override
 	public void resize(int width, int height) {
-		
 	}
 
 	@Override
 	public void close() {
-		
 	}
 
 }
