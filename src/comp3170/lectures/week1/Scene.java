@@ -1,11 +1,7 @@
 package comp3170.lectures.week1;
 
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.GL_POINTS;
-import static org.lwjgl.opengl.GL11.GL_LINE_LOOP;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
-import static org.lwjgl.opengl.GL11.glPointSize;
-import static org.lwjgl.opengl.GL11.glLineWidth;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -57,9 +53,6 @@ public class Scene {
 		
 		// copy the data into a Vertex Buffer Object in graphics memory
 		vertexBuffer = GLBuffers.createBuffer(vertices);
-		
-		glPointSize(10f); // An optional operation to set the size of points.
-		glLineWidth(10f); // An optional operation to set the size of points.
 	}
 
 	public void draw() {

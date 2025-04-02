@@ -38,7 +38,6 @@ public class Week1 implements IWindowListener {
 		//Run the window
 		window.run();
 	}
-
 	
 	public void init() { // Run when the window is launched
 		new ShaderLibrary(DIRECTORY); // Create a singleton instance of the shader library, pointing to the directory.
@@ -48,10 +47,8 @@ public class Week1 implements IWindowListener {
 		glClearColor(0.13f, 0.21f, 0.33f, 1.0f); // Unity blue
 	}		
 	
-	public void draw() { // draw is called every frame.
-				
-		//clear the color buffer
-		glClear(GL_COLOR_BUFFER_BIT);
+	public void draw() { // draw is called every frame.		
+		glClear(GL_COLOR_BUFFER_BIT); //clear the color buffer
 		
 		scene.draw(); // Call the draw function on the scene
 	}
@@ -61,8 +58,7 @@ public class Week1 implements IWindowListener {
 		this.screenWidth = width;
 		this.screenHeight = height;
 		
-		// lower left corner x origin, lower left corner y origin, width, height
-		glViewport(0,0, width, height);		
+		glViewport(0,0, width, height);	// lower left corner x origin, lower left corner y origin, width, height
 	}
 
 	@Override
