@@ -1,7 +1,7 @@
 #version 410
 
 uniform vec3 u_colour; // colour as a 3D vector (r,g,b)
-in vec4 o_worldPos;
+uniform vec2 u_screenSize; // screen dimensions in pixels
 
 layout(location = 0) out vec4 o_colour; // (r,g,b,a) (0-1,0-1,0-1,0-1)
 
@@ -11,10 +11,11 @@ void main()
 	
 	vec2 offset = vec2(0.5,0.5f);
 
-	float redChannel = 0.0f;
-	float blueChannel = 0.0f;
-	float greenChannel = o_worldPos.y;
+	float greenIntensity = 2.0f;
+	float redChannel = p.y;
+	float blueChannel = 1.0f-p.y;
+	float greenChannel = distance(offset,p) * greenIntensity;
 	
 	vec3 finalColour = vec3(redChannel,greenChannel,blueChannel);
-	o_colour = vec4(u_colour.rgb - finalColour.rgb, 1.0f);
+	o_colour = vec4(u_colour.rgb + finalColour.rgb, 1.0f);
 }
