@@ -4,7 +4,6 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.joml.Matrix4f;
 
-
 import comp3170.GLBuffers;
 import comp3170.InputManager;
 import comp3170.SceneObject;
@@ -13,19 +12,12 @@ import comp3170.ShaderLibrary;
 import static comp3170.Math.TAU;
 
 import static org.lwjgl.opengl.GL15.glDrawElements;
-import static org.lwjgl.opengl.GL15.glDrawArrays;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glPolygonMode;
 
-import java.util.Arrays;
-
-import static org.lwjgl.opengl.GL15.glPointSize;
-import static org.lwjgl.opengl.GL15.glLineWidth;
 import static org.lwjgl.opengl.GL15.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL15.GL_FRONT_AND_BACK;
 import static org.lwjgl.opengl.GL15.GL_LINE;
-import static org.lwjgl.opengl.GL15.GL_POINT;
-import static org.lwjgl.opengl.GL15.GL_POINTS;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_UNSIGNED_INT;
@@ -81,9 +73,8 @@ public class Gem extends SceneObject {
 		int j = 0;
 		for (int i = 1; i <= (nSides); i++) {
 			indices[j++] = 0;
-			indices[j++] = i;
 			indices[j++] = (i%nSides) + 1; // Wrap around
-
+			indices[j++] = i;
 		}
 		
 		int k = nSides*3;
@@ -117,13 +108,11 @@ public class Gem extends SceneObject {
 		if (input.isKeyDown(GLFW_KEY_D)) {
 			yAngle += ROTATE_RATE * deltaTime;
 		}
-		
 		getMatrix().identity().rotateY(yAngle).rotateX(xAngle);
 	}
 	
 	public void drawSelf(Matrix4f mvpMatrix) {
 		shader.enable();
-		
 		shader.setAttribute("a_position", vertexBuffer);
 		shader.setUniform("u_mvpMatrix", mvpMatrix);
 		shader.setUniform("u_colour", baseColour);

@@ -3,10 +3,8 @@ package comp3170.lectures.week5;
 import static org.lwjgl.opengl.GL15.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL15.glClear;
 import static org.lwjgl.opengl.GL15.glClearColor;
-import static org.lwjgl.opengl.GL15.glViewport;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
@@ -80,13 +78,11 @@ public class Week5 implements IWindowListener{
 		oldTime = time;
 		scene.update(input, deltaTime);
 		input.clear();
-		
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		System.out.println(width + " x " + height);
-		// glViewport(0,0,width,height);
 	}
 
 	@Override

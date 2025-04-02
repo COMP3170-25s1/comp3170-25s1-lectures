@@ -16,7 +16,6 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glPolygonMode;
 import static org.lwjgl.opengl.GL15.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL15.GL_FRONT_AND_BACK;
-import static org.lwjgl.opengl.GL15.GL_LINE;
 import static org.lwjgl.opengl.GL15.GL_FILL;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_UNSIGNED_INT;

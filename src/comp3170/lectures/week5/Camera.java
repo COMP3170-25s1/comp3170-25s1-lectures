@@ -28,13 +28,8 @@ public class Camera extends SceneObject {
 	public Matrix4f GetProjectionMatrix(Matrix4f dest) {
 		return projectionMatrix.invert(dest);
 	}
-	
-	private final float MOVE_SPEED = 0.5f;
+
 	private final float ZOOM_SPEED = 1.0f;
-	private final float ROTATE_RATE = TAU/12;
-	
-	private float xMove = 0f;
-	private float yMove = 0f;
 	private float yAngle = 0f;
 	private float xAngle = 0f;
 	
@@ -49,6 +44,5 @@ public class Camera extends SceneObject {
 		
 		getMatrix().identity().rotateY(yAngle).rotateX(xAngle);
 		projectionMatrix.scaling(zoom,zoom,1.0f); // Doesn't work for non-uniform screens - why? Check Week 4 slides!
-		
 	}
 }
