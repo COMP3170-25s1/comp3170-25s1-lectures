@@ -1,4 +1,4 @@
-package comp3170.lectures.week7;
+package comp3170.lectures.week7.barycentric;
 
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
@@ -68,8 +68,8 @@ public class Triangle extends SceneObject {
 
 	public void update(float deltaTime, InputManager input) {
 
-		int w = Week7.theWindow.getScreenWidth();
-		int h = Week7.theWindow.getScreenHeight();
+		int w = BarycentricDemo.theWindow.getScreenWidth();
+		int h = BarycentricDemo.theWindow.getScreenHeight();
 
 		if (input.wasMouseClicked()) {
 			// select the vertex closest to the mouse (if within SELECT_DISTANCE)

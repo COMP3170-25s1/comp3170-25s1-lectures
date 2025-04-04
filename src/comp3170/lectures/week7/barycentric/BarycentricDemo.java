@@ -1,5 +1,5 @@
 
-package comp3170.lectures.week7;
+package comp3170.lectures.week7.barycentric;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
@@ -13,10 +13,10 @@ import comp3170.OpenGLException;
 import comp3170.ShaderLibrary;
 import comp3170.Window;
 
-public class Week7 implements IWindowListener {
+public class BarycentricDemo implements IWindowListener {
 
-	public static Week7 theWindow;
-	private static final File SHADER_DIR = new File("src/comp3170/lectures/week7");
+	public static BarycentricDemo theWindow;
+	private static final File SHADER_DIR = new File("src/comp3170/lectures/week7/barycentric");
 
 	private Window window;
 	private int screenWidth = 800;
@@ -27,9 +27,9 @@ public class Week7 implements IWindowListener {
 	private long oldTime;
 
 
-	public Week7() throws OpenGLException {
+	public BarycentricDemo() throws OpenGLException {
 		theWindow = this;
-		window = new Window("Week 7", screenWidth, screenHeight, this);
+		window = new Window("Barycentric interpolation demo", screenWidth, screenHeight, this);
 		window.setSamples(4);	// set the number of samples or 0 to disable
 		window.run();		
 	}
@@ -85,6 +85,6 @@ public class Week7 implements IWindowListener {
 	}
 
 	public static void main(String[] args) throws OpenGLException {
-		new Week7();
+		new BarycentricDemo();
 	}
 }
