@@ -1,5 +1,5 @@
 
-package comp3170.lectures.week7;
+package comp3170.lectures.week7.barycentric;
 
 import comp3170.InputManager;
 import comp3170.SceneObject;
