@@ -1,7 +1,11 @@
 package comp3170.lectures.week7.barycentric;
 
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
+import static org.lwjgl.opengl.GL11.glDrawElements;
+import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.glBindBuffer;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
@@ -23,6 +27,8 @@ public class Triangle extends SceneObject {
 	private int vertexBuffer;
 	private Vector3f[] colour;
 	private int colourBuffer;
+	private int[] indices;
+	private int indexBuffer;
 
 	public Triangle() {
 		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
@@ -31,21 +37,27 @@ public class Triangle extends SceneObject {
 		// @formatter:off
 
 		vertices = new Vector4f[] {
-			new Vector4f(   0,   0.8f, 0, 1),
-			new Vector4f(-0.4f, -0.8f, 0, 1),
-			new Vector4f( 0.5f, -0.7f, 0, 1),
+			new Vector4f(-0.5f,  0.5f, 0, 1),
+			new Vector4f(-0.5f, -0.5f, 0, 1),
+			new Vector4f( 0.5f, -0.5f, 0, 1),
 		};
 
 		vertexBuffer = GLBuffers.createBuffer(vertices);
 
 		colour = new Vector3f[] {
-			new Vector3f(1,0,0),
-			new Vector3f(0,1,0),
-			new Vector3f(0,0,1),
+			new Vector3f(1,0,0),	// Red
+			new Vector3f(0,1,0),	// Green
+			new Vector3f(0,0,1),	// Blue
 		};
 
 		colourBuffer = GLBuffers.createBuffer(colour);
 
+		indices = new int[] {
+			0,1,2,
+		};
+		
+		indexBuffer = GLBuffers.createIndexBuffer(indices);
+		
 		// @formatter:on
 	}
 
@@ -56,9 +68,9 @@ public class Triangle extends SceneObject {
 		shader.setUniform("u_mvpMatrix", mvpMatrix);
 		shader.setAttribute("a_position", vertexBuffer);
 		shader.setAttribute("a_colour", colourBuffer);
-
-		glDrawArrays(GL_TRIANGLES, 0, vertices.length);
-
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+		glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
 	}
 
 	private Vector2i mousePosition = new Vector2i();
