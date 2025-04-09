@@ -37,16 +37,18 @@ public class Triangle extends SceneObject {
 		// @formatter:off
 
 		vertices = new Vector4f[] {
-			new Vector4f(-0.5f,  0.5f, 0, 1),
 			new Vector4f(-0.5f, -0.5f, 0, 1),
+			new Vector4f(-0.5f,  0.5f, 0, 1),
 			new Vector4f( 0.5f, -0.5f, 0, 1),
+			new Vector4f( 0.5f,  0.5f, 0, 1),
 		};
 
 		vertexBuffer = GLBuffers.createBuffer(vertices);
 
 		colour = new Vector3f[] {
 			new Vector3f(1,0,0),	// Red
-			new Vector3f(0,1,0),	// Green
+			new Vector3f(1,0,0),	// Red
+			new Vector3f(0,0,1),	// Blue
 			new Vector3f(0,0,1),	// Blue
 		};
 
@@ -54,6 +56,7 @@ public class Triangle extends SceneObject {
 
 		indices = new int[] {
 			0,1,2,
+			3,2,1,
 		};
 		
 		indexBuffer = GLBuffers.createIndexBuffer(indices);

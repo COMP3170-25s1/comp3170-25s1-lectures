@@ -9,6 +9,8 @@ const float NLINES = 10.0;
 void main() {
 	vec3 c = v_colour;
 	
+//	c = round(c * NLINES) / NLINES;
+	
     o_colour = vec4(c, 1);
 }
 
