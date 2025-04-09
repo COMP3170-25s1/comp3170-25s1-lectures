@@ -12,9 +12,14 @@ public class Scene extends SceneObject {
 	public static Scene theScene;
 	private Camera camera;
 	
-	
 	public Scene() {
 		theScene = this;		
+		
+		// scene -+-> grid
+		//        |
+		//        +-> axes
+		//        |
+		//        +-> camera -> arm -> camera
 		
 		Grid grid = new Grid(10);
 		grid.setParent(this);
