@@ -29,7 +29,7 @@ public class ExtrusionDemo implements IWindowListener {
 
 	public ExtrusionDemo() throws OpenGLException {
 		theWindow = this;
-		window = new Window("Barycentric interpolation demo", screenWidth, screenHeight, this);
+		window = new Window("Extrusion demo", screenWidth, screenHeight, this);
 		window.setSamples(4);	// set the number of samples or 0 to disable
 		window.run();		
 	}
