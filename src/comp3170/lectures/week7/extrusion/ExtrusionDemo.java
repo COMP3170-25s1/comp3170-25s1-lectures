@@ -2,8 +2,16 @@
 package comp3170.lectures.week7.extrusion;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.glClearDepth;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL32.GL_PROGRAM_POINT_SIZE;
+import static org.lwjgl.opengl.GL41.glPointSize;
 
 import java.io.File;
 
@@ -38,7 +46,14 @@ public class ExtrusionDemo implements IWindowListener {
 	@Override
 	public void init() {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearDepth(1);
 
+		glDisable(GL_PROGRAM_POINT_SIZE);
+		glPointSize(5);
+
+//		glEnable(GL_CULL_FACE);		// backface culling
+		glEnable(GL_DEPTH_TEST);	// depth buffer
+		
 		new ShaderLibrary(COMMON_DIR);
 		scene = new Scene();
 		
@@ -62,6 +77,8 @@ public class ExtrusionDemo implements IWindowListener {
 		update();
 		
 		glClear(GL_COLOR_BUFFER_BIT);		
+		glClear(GL_DEPTH_BUFFER_BIT);
+
 		scene.draw();
 	}
 

@@ -6,6 +6,7 @@ import comp3170.InputManager;
 import comp3170.SceneObject;
 import comp3170.lectures.common.sceneobjects.Axes3D;
 import comp3170.lectures.common.sceneobjects.Grid;
+import comp3170.lectures.week7.extrusion.sceneobjects.Ring;
 
 public class Scene extends SceneObject {
 
@@ -21,11 +22,14 @@ public class Scene extends SceneObject {
 		//        |
 		//        +-> camera -> arm -> camera
 		
-		Grid grid = new Grid(10);
-		grid.setParent(this);
+//		Grid grid = new Grid(10);
+//		grid.setParent(this);
 
 		Axes3D axes = new Axes3D();
 		axes.setParent(this);
+		
+		Ring ring = new Ring();
+		ring.setParent(this);
 		
 		camera = new Camera();
 		camera.setParent(this);
