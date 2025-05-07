@@ -12,6 +12,7 @@ public class Scene extends SceneObject {
 
 	public static Scene theScene;
 	private Camera camera;
+	private Ring ring;
 	
 	public Scene() {
 		theScene = this;		
@@ -28,7 +29,7 @@ public class Scene extends SceneObject {
 		Axes3D axes = new Axes3D();
 		axes.setParent(this);
 		
-		Ring ring = new Ring();
+		ring = new Ring();
 		ring.setParent(this);
 		
 		camera = new Camera();
@@ -36,7 +37,8 @@ public class Scene extends SceneObject {
 	}
 
 	public void update(float deltaTime, InputManager input) {
-		camera.update(deltaTime, input);		
+		camera.update(deltaTime, input);
+		ring.update(deltaTime, input);
 	}
 
 	private Matrix4f viewMatrix = new Matrix4f();

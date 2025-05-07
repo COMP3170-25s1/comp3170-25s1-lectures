@@ -18,13 +18,13 @@ public class Camera extends SceneObject implements ICamera {
 	private static final float FAR = 10;
 	private static final float DISTANCE = (NEAR + FAR) / 2;
 	
-	private PerspectiveCamera camera;
-//	private OrthographicCamera camera;
+//	private PerspectiveCamera camera;
+	private OrthographicCamera camera;
 	private OrbitingArmature arm;
 	
 	public Camera() {
-		camera = new PerspectiveCamera(TAU / 4, 1, NEAR, FAR);
-//		camera = new OrthographicCamera(WIDTH, HEIGHT, NEAR, FAR);
+//		camera = new PerspectiveCamera(TAU / 4, 1, NEAR, FAR);
+		camera = new OrthographicCamera(WIDTH, HEIGHT, NEAR, FAR);
 		arm = new OrbitingArmature(DISTANCE);
 		
 		arm.setParent(this);

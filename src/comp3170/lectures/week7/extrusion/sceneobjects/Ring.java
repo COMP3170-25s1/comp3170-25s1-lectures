@@ -19,6 +19,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
 import comp3170.GLBuffers;
+import comp3170.InputManager;
 import comp3170.SceneObject;
 import comp3170.Shader;
 import comp3170.ShaderLibrary;
@@ -30,23 +31,32 @@ public class Ring extends SceneObject {
 	static final private String VERTEX_SHADER = "colourVertex.glsl";
 	static final private String FRAGMENT_SHADER = "colourFragment.glsl";
 
+	static final private String NORMAL_VERTEX_SHADER = "normalVertex.glsl";
+	static final private String NORMAL_FRAGMENT_SHADER = "normalFragment.glsl";
+
 	static final private int NSIDES = 100;
 	static final private float RADIUS = 1;
 	static final private float SCALE = 0.5f;
 	
-	private Shader shader;
+	private Shader colourShader;
+	private Shader normalShader;
+
 	private Vector4f[] vertices;
+	private Vector4f[] normals;
+	private Vector4f[] colours;
 	private int vertexBuffer;
+	private int normalBuffer;
+	private int colourBuffer;
 	private int[] indices;
 	private int indexBuffer;
-	private Vector4f[] colours;
-	private int colourBuffer;
+	
 	private Vector4f[] crossSection;
 	private Vector4f[] crossSectionColour;
-	
+	private Vector4f[] crossSectionNormals;
 	
 	public Ring() {
-		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
+		colourShader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
+		normalShader = ShaderLibrary.instance.compileShader(NORMAL_VERTEX_SHADER, NORMAL_FRAGMENT_SHADER);
 
 		// create the curve
 		
@@ -75,11 +85,18 @@ public class Ring extends SceneObject {
 			new Vector4f(1, 1, 0, 1),
 			new Vector4f(1, 1, 0, 1),				
 		};		
-			
+
+		crossSectionNormals = new Vector4f[] {
+			new Vector4f( 0,-1, 0, 0),
+			new Vector4f( 1, 0, 0, 0),
+			new Vector4f( 0, 1, 0, 0),
+			new Vector4f(-1, 0, 0, 0),
+		};		
+
 
 		// extrude cross-section along curve		
 		createVertexBuffer(curve, tangent);
-		
+
 		// create index buffer
 		createIndexBuffer(crossSection);
 		
@@ -92,17 +109,18 @@ public class Ring extends SceneObject {
 		int k = 0;
 		for (int i = 0; i < NSIDES; i++) {
 			for (int j = 0; j < n; j++) {
-
-				int iNext = (i+1) % NSIDES;
-				int jNext = (j+1) % n;
+							
+				int iNext = (i+1) % NSIDES;				
+				int side0 = 2 * n * i + 2 * j;
+				int side1 = 2 * n * iNext + 2 * j;
 				
-				indices[k++] = i * n + j;
-				indices[k++] = iNext * n + j;
-				indices[k++] = i * n + jNext;
+				indices[k++] = side0;
+				indices[k++] = side1;
+				indices[k++] = side0 + 1;
 
-				indices[k++] = iNext * n + jNext;
-				indices[k++] = i * n + jNext;
-				indices[k++] = iNext * n + j;			
+				indices[k++] = side1 + 1;
+				indices[k++] = side0 + 1;
+				indices[k++] = side1;
 			}
 		}		
 
@@ -110,8 +128,27 @@ public class Ring extends SceneObject {
 	}
 
 	private void createVertexBuffer(Vector4f[] curve, Vector4f[] tangent) {
-		int nVertices = NSIDES * crossSection.length;
+		
+		// cross-section
+		//
+		//  0----1
+		//  |    |
+		//  |    |
+		//  3----2
+		//
+		// vertex buffer
+		//
+		//   0----1
+		//  7      2		 
+		//  |      |
+		//  |      |
+		//  6      3
+		//   5----4
+
+		
+		int nVertices = NSIDES * crossSection.length * 2;
 		vertices = new Vector4f[nVertices];
+		normals = new Vector4f[nVertices];
 		colours = new Vector4f[nVertices];
 		
 		int k = 0;
@@ -124,6 +161,10 @@ public class Ring extends SceneObject {
 		Vector4f kAxis;
 		
 		Matrix4f matrix = new Matrix4f();
+		Matrix4f normalMatrix = new Matrix4f();
+		
+		Vector4f[] transformedCrossSection = new Vector4f[NSIDES]; 
+		Vector4f[] transformedNormals = new Vector4f[NSIDES]; 
 		
 		for (int i = 0; i < NSIDES; i++) {
 			point = curve[i];
@@ -136,26 +177,58 @@ public class Ring extends SceneObject {
 			matrix.setColumn(1, jAxis);
 			matrix.setColumn(2, kAxis);
 			matrix.setColumn(3, point);
+			
+//			matrix.scaleLocal(0.5f, 1, 1);
+//			matrix.scale(0.5f, 1, 1);			
 			matrix.scale(SCALE);
 //			matrix.rotateZ(i * TAU / NSIDES);
 			
+			// convert the matrix to a normal matrix to solve the normal stretching issue
+			matrix.normal(normalMatrix);
+			
 			for (int j = 0; j < crossSection.length; j++) {
-				vertices[k] = crossSection[j].mul(matrix, new Vector4f());
+				transformedCrossSection[j] = crossSection[j].mul(matrix, new Vector4f());
+				transformedNormals[j] = crossSectionNormals[j].mul(normalMatrix, new Vector4f()).normalize();
+			}
+			
+			for (int j = 0; j < crossSection.length; j++) {
+				vertices[k] = transformedCrossSection[j];
+				normals[k] = transformedNormals[j];
 				colours[k] = crossSectionColour[j];
+				k++;
+				
+				int j1 = (j+1) % crossSection.length;
+				vertices[k] = transformedCrossSection[j1];
+				normals[k] = transformedNormals[j];
+				colours[k] = crossSectionColour[j1];
 				k++;
 			}
 		}
 		
 		vertexBuffer = GLBuffers.createBuffer(vertices);
+		normalBuffer = GLBuffers.createBuffer(normals);
 		colourBuffer = GLBuffers.createBuffer(colours);
 	}
 
+	private Matrix4f modelMatrix = new Matrix4f();
+	private Matrix4f normalMatrix = new Matrix4f();
+	
 	@Override
 	protected void drawSelf(Matrix4f mvpMatrix) {
+		Shader shader = normalShader;
+		shader.setStrict(false);
+
 		shader.enable();
 
+		// convert the model matrix to a normal matrix to solve the normal stretching issue
+		getModelToWorldMatrix(modelMatrix);	// MODEL -> WORLD
+		modelMatrix.normal(normalMatrix);
+		
 		shader.setUniform("u_mvpMatrix", mvpMatrix);
+		shader.setUniform("u_normalMatrix", normalMatrix);
+
 		shader.setAttribute("a_position", vertexBuffer);
+		shader.setAttribute("a_normal", normalBuffer);
 		shader.setAttribute("a_colour", colourBuffer);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -163,6 +236,12 @@ public class Ring extends SceneObject {
 		glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);		
 //		glDrawArrays(GL_POINTS, 0, vertices.length);
 		
+	}
+
+	private static float ROTATION_SPEED = TAU / 4;
+	
+	public void update(float deltaTime, InputManager input) {
+		getMatrix().rotateX(ROTATION_SPEED * deltaTime);		
 	}
 	
 	
