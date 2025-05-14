@@ -4,27 +4,45 @@ import static comp3170.Math.TAU;
 import static comp3170.Math.cross;
 import static org.lwjgl.opengl.GL11.GL_FILL;
 import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
+import static org.lwjgl.opengl.GL11.GL_LINEAR;
+import static org.lwjgl.opengl.GL11.GL_LINEAR_MIPMAP_LINEAR;
+import static org.lwjgl.opengl.GL11.GL_REPEAT;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL11.glPolygonMode;
+import static org.lwjgl.opengl.GL11.glTexParameteri;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
+import static org.lwjgl.opengl.GL30.glGenerateMipmap;
+
+import java.io.IOException;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import comp3170.GLBuffers;
 import comp3170.InputManager;
+import comp3170.OpenGLException;
 import comp3170.SceneObject;
 import comp3170.Shader;
 import comp3170.ShaderLibrary;
+import comp3170.TextureLibrary;
 
 public class Ring extends SceneObject {
 
-	static final private String VERTEX_SHADER = "colourVertex.glsl";
-	static final private String FRAGMENT_SHADER = "colourFragment.glsl";
+	static final private String VERTEX_SHADER = "litVertex.glsl";
+	static final private String FRAGMENT_SHADER = "litFragment.glsl";
 
 	static final private String NORMAL_VERTEX_SHADER = "normalVertex.glsl";
 	static final private String NORMAL_FRAGMENT_SHADER = "normalFragment.glsl";
@@ -32,13 +50,16 @@ public class Ring extends SceneObject {
 	static final private String UV_VERTEX_SHADER = "uvVertex.glsl";
 	static final private String UV_FRAGMENT_SHADER = "uvFragment.glsl";
 
-	static final private int NSIDES = 10;
+	static final private String TEXTURE = "Red_Tiles_DIFF.jpg";
+	
+	static final private int NSIDES = 100;
 	static final private float RADIUS = 1;
 	static final private float SCALE = 0.5f;
 
-	static final private Vector2f UV_MAX = new Vector2f(8, 2);
+	static final private Vector2f UV_MAX = new Vector2f(8, 1);
+	static final private float GAMMA = 2.2f;
 
-	private Shader colourShader;
+	private Shader mainShader;
 	private Shader normalShader;
 	private Shader uvShader;
 
@@ -52,13 +73,14 @@ public class Ring extends SceneObject {
 	private int uvBuffer;
 	private int[] indices;
 	private int indexBuffer;
+	private int textureID;
 	
 	private Vector4f[] crossSection;
 	private Vector4f[] crossSectionColour;
 	private Vector4f[] crossSectionNormals;
 	
 	public Ring() {
-		colourShader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
+		mainShader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
 		normalShader = ShaderLibrary.instance.compileShader(NORMAL_VERTEX_SHADER, NORMAL_FRAGMENT_SHADER);
 		uvShader = ShaderLibrary.instance.compileShader(UV_VERTEX_SHADER, UV_FRAGMENT_SHADER);
 
@@ -97,12 +119,32 @@ public class Ring extends SceneObject {
 		};		
 
 
-		// extrude cross-section along curve		
 		createVertexBuffer(curve, tangent);
-
-		// create index buffer
 		createIndexBuffer(crossSection);
+		loadTextures();
+	}
 
+	private void loadTextures() {
+		try {
+			textureID = TextureLibrary.instance.loadTexture(TEXTURE);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		} catch (OpenGLException e) {
+			e.printStackTrace();
+		}
+
+		// Wrap modes
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // S is U
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // T is V
+//
+//		// Filtering
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//
+//		// MipMaps
+//		glGenerateMipmap(GL_TEXTURE_2D);
+		
 	}
 
 	private void createIndexBuffer(Vector4f[] crossSection) {
@@ -222,9 +264,12 @@ public class Ring extends SceneObject {
 	private Matrix4f modelMatrix = new Matrix4f();
 	private Matrix4f normalMatrix = new Matrix4f();
 	
+	private Vector3f ambientIntensity = new Vector3f(0.05f,0.05f,0.05f);
+	private Vector3f lightIntensity = new Vector3f(1.0f,1.0f,0.0f);
+	
 	@Override
 	protected void drawSelf(Matrix4f mvpMatrix) {
-		Shader shader = uvShader;
+		Shader shader = mainShader;
 		shader.setStrict(false);
 
 		shader.enable();
@@ -236,6 +281,14 @@ public class Ring extends SceneObject {
 		shader.setUniform("u_mvpMatrix", mvpMatrix);
 		shader.setUniform("u_normalMatrix", normalMatrix);
 
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureID);		
+		shader.setUniform("u_texture", 0);
+		shader.setUniform("u_gamma", GAMMA);
+		
+		shader.setUniform("u_ambientIntensity", ambientIntensity);
+		shader.setUniform("u_lightIntensity", lightIntensity);
+		
 		shader.setAttribute("a_position", vertexBuffer);
 		shader.setAttribute("a_normal", normalBuffer);
 		shader.setAttribute("a_colour", colourBuffer);

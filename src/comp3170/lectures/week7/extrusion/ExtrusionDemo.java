@@ -4,6 +4,7 @@ package comp3170.lectures.week7.extrusion;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL11.glClearDepth;
@@ -25,6 +26,7 @@ public class ExtrusionDemo implements IWindowListener {
 
 	public static ExtrusionDemo theWindow;
 	private static final File COMMON_DIR = new File("src/comp3170/lectures/common/shaders");
+	private static final File SHADER_DIR = new File("src/comp3170/lectures/week7/shaders");
 	private static final File TEXTURE_DIR = new File("src/comp3170/lectures/week7/textures");
 
 	private Window window;
@@ -52,10 +54,10 @@ public class ExtrusionDemo implements IWindowListener {
 		glDisable(GL_PROGRAM_POINT_SIZE);
 		glPointSize(5);
 
-//		glEnable(GL_CULL_FACE);		// backface culling
+		glEnable(GL_CULL_FACE);		// backface culling
 		glEnable(GL_DEPTH_TEST);	// depth buffer
 		
-		new ShaderLibrary(COMMON_DIR);
+		new ShaderLibrary(COMMON_DIR).addPath(SHADER_DIR);
 		new TextureLibrary(TEXTURE_DIR);
 	
 		scene = new Scene();
