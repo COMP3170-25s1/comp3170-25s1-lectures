@@ -2,16 +2,15 @@
 package comp3170.lectures.week7.extrusion;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL11.glClearDepth;
-import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glPointSize;
 import static org.lwjgl.opengl.GL32.GL_PROGRAM_POINT_SIZE;
-import static org.lwjgl.opengl.GL41.glPointSize;
 
 import java.io.File;
 
@@ -19,12 +18,14 @@ import comp3170.IWindowListener;
 import comp3170.InputManager;
 import comp3170.OpenGLException;
 import comp3170.ShaderLibrary;
+import comp3170.TextureLibrary;
 import comp3170.Window;
 
 public class ExtrusionDemo implements IWindowListener {
 
 	public static ExtrusionDemo theWindow;
 	private static final File COMMON_DIR = new File("src/comp3170/lectures/common/shaders");
+	private static final File TEXTURE_DIR = new File("src/comp3170/lectures/week7/textures");
 
 	private Window window;
 	private int screenWidth = 800;
@@ -55,6 +56,8 @@ public class ExtrusionDemo implements IWindowListener {
 		glEnable(GL_DEPTH_TEST);	// depth buffer
 		
 		new ShaderLibrary(COMMON_DIR);
+		new TextureLibrary(TEXTURE_DIR);
+	
 		scene = new Scene();
 		
 		// initialise oldTime

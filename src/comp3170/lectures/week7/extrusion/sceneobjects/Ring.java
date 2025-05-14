@@ -1,21 +1,18 @@
 package comp3170.lectures.week7.extrusion.sceneobjects;
 
+import static comp3170.Math.TAU;
+import static comp3170.Math.cross;
 import static org.lwjgl.opengl.GL11.GL_FILL;
-import static org.lwjgl.opengl.GL11.GL_LINE;
 import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.GL_POINTS;
-import static org.lwjgl.opengl.GL11.GL_LINES;
-import static org.lwjgl.opengl.GL11.GL_LINE_STRIP;
-import static org.lwjgl.opengl.GL11.GL_LINE_LOOP;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
-import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL11.glPolygonMode;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 import comp3170.GLBuffers;
@@ -23,8 +20,6 @@ import comp3170.InputManager;
 import comp3170.SceneObject;
 import comp3170.Shader;
 import comp3170.ShaderLibrary;
-import static comp3170.Math.TAU;
-import static comp3170.Math.cross;
 
 public class Ring extends SceneObject {
 
@@ -34,19 +29,27 @@ public class Ring extends SceneObject {
 	static final private String NORMAL_VERTEX_SHADER = "normalVertex.glsl";
 	static final private String NORMAL_FRAGMENT_SHADER = "normalFragment.glsl";
 
-	static final private int NSIDES = 100;
+	static final private String UV_VERTEX_SHADER = "uvVertex.glsl";
+	static final private String UV_FRAGMENT_SHADER = "uvFragment.glsl";
+
+	static final private int NSIDES = 10;
 	static final private float RADIUS = 1;
 	static final private float SCALE = 0.5f;
-	
+
+	static final private Vector2f UV_MAX = new Vector2f(8, 2);
+
 	private Shader colourShader;
 	private Shader normalShader;
+	private Shader uvShader;
 
 	private Vector4f[] vertices;
 	private Vector4f[] normals;
 	private Vector4f[] colours;
+	private Vector2f[] uvs;
 	private int vertexBuffer;
 	private int normalBuffer;
 	private int colourBuffer;
+	private int uvBuffer;
 	private int[] indices;
 	private int indexBuffer;
 	
@@ -57,14 +60,14 @@ public class Ring extends SceneObject {
 	public Ring() {
 		colourShader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
 		normalShader = ShaderLibrary.instance.compileShader(NORMAL_VERTEX_SHADER, NORMAL_FRAGMENT_SHADER);
+		uvShader = ShaderLibrary.instance.compileShader(UV_VERTEX_SHADER, UV_FRAGMENT_SHADER);
 
 		// create the curve
 		
-		Vector4f[] curve = new Vector4f[NSIDES];
-		Vector4f[] tangent = new Vector4f[NSIDES];
-		vertices = new Vector4f[NSIDES * 2];
+		Vector4f[] curve = new Vector4f[NSIDES+1];
+		Vector4f[] tangent = new Vector4f[NSIDES+1];
 		
-		for (int i = 0; i < NSIDES; i++) {
+		for (int i = 0; i <= NSIDES; i++) {
 			float angle = i * TAU / NSIDES;
 			
 			curve[i] = new Vector4f(RADIUS, 0, 0, 1).rotateY(angle);
@@ -99,7 +102,7 @@ public class Ring extends SceneObject {
 
 		// create index buffer
 		createIndexBuffer(crossSection);
-		
+
 	}
 
 	private void createIndexBuffer(Vector4f[] crossSection) {
@@ -110,7 +113,7 @@ public class Ring extends SceneObject {
 		for (int i = 0; i < NSIDES; i++) {
 			for (int j = 0; j < n; j++) {
 							
-				int iNext = (i+1) % NSIDES;				
+				int iNext = i + 1;				
 				int side0 = 2 * n * i + 2 * j;
 				int side1 = 2 * n * iNext + 2 * j;
 				
@@ -146,10 +149,11 @@ public class Ring extends SceneObject {
 		//   5----4
 
 		
-		int nVertices = NSIDES * crossSection.length * 2;
+		int nVertices = (NSIDES + 1) * crossSection.length * 2;
 		vertices = new Vector4f[nVertices];
 		normals = new Vector4f[nVertices];
 		colours = new Vector4f[nVertices];
+		uvs = new Vector2f[nVertices];
 		
 		int k = 0;
 		
@@ -166,7 +170,7 @@ public class Ring extends SceneObject {
 		Vector4f[] transformedCrossSection = new Vector4f[NSIDES]; 
 		Vector4f[] transformedNormals = new Vector4f[NSIDES]; 
 		
-		for (int i = 0; i < NSIDES; i++) {
+		for (int i = 0; i <= NSIDES; i++) {
 			point = curve[i];
 			kAxis = tangent[i];
 			
@@ -192,15 +196,19 @@ public class Ring extends SceneObject {
 			}
 			
 			for (int j = 0; j < crossSection.length; j++) {
+				float u = i * UV_MAX.x / NSIDES;
+				
 				vertices[k] = transformedCrossSection[j];
 				normals[k] = transformedNormals[j];
 				colours[k] = crossSectionColour[j];
+				uvs[k] = new Vector2f(u,0);
 				k++;
 				
 				int j1 = (j+1) % crossSection.length;
 				vertices[k] = transformedCrossSection[j1];
 				normals[k] = transformedNormals[j];
 				colours[k] = crossSectionColour[j1];
+				uvs[k] = new Vector2f(u, UV_MAX.y);
 				k++;
 			}
 		}
@@ -208,6 +216,7 @@ public class Ring extends SceneObject {
 		vertexBuffer = GLBuffers.createBuffer(vertices);
 		normalBuffer = GLBuffers.createBuffer(normals);
 		colourBuffer = GLBuffers.createBuffer(colours);
+		uvBuffer = GLBuffers.createBuffer(uvs);
 	}
 
 	private Matrix4f modelMatrix = new Matrix4f();
@@ -215,7 +224,7 @@ public class Ring extends SceneObject {
 	
 	@Override
 	protected void drawSelf(Matrix4f mvpMatrix) {
-		Shader shader = normalShader;
+		Shader shader = uvShader;
 		shader.setStrict(false);
 
 		shader.enable();
@@ -230,6 +239,7 @@ public class Ring extends SceneObject {
 		shader.setAttribute("a_position", vertexBuffer);
 		shader.setAttribute("a_normal", normalBuffer);
 		shader.setAttribute("a_colour", colourBuffer);
+		shader.setAttribute("a_texcoord", uvBuffer);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -241,7 +251,7 @@ public class Ring extends SceneObject {
 	private static float ROTATION_SPEED = TAU / 4;
 	
 	public void update(float deltaTime, InputManager input) {
-		getMatrix().rotateX(ROTATION_SPEED * deltaTime);		
+		//getMatrix().rotateX(ROTATION_SPEED * deltaTime);		
 	}
 	
 	
