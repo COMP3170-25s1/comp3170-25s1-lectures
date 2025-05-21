@@ -3,6 +3,7 @@ package comp3170.lectures.common.cameras;
 import static org.lwjgl.glfw.GLFW.*;
 
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 import comp3170.InputManager;
 import comp3170.SceneObject;
@@ -31,17 +32,23 @@ public class OrthographicCamera extends SceneObject implements ICamera {
 		return dest.setOrtho(-width / 2, width / 2, -height / 2, height / 2, near, far);
 	}
 
-	private Matrix4f modelToWorldMatrix = new Matrix4f();
+	private Matrix4f modelMatrix = new Matrix4f();
 	
 	@Override
 	public Matrix4f getViewMatrix(Matrix4f dest) {
 
 		// invert the model matrix and remove scale
-		getModelToWorldMatrix(modelToWorldMatrix);
-		modelToWorldMatrix.invert(dest);
+		getModelToWorldMatrix(modelMatrix);
+		modelMatrix.invert(dest);
 		dest.normalize3x3();
 		
 		return dest;
+	}
+
+	@Override
+	public Vector4f getDirection(Vector4f dest) {
+		getModelToWorldMatrix(modelMatrix);
+		return dest.set(0,0,1,0).mul(modelMatrix);
 	}
 
 	public void update(float deltaTime, InputManager input) {
@@ -56,6 +63,4 @@ public class OrthographicCamera extends SceneObject implements ICamera {
 			height -= ZOOM_CHANGE * deltaTime;
 		}
 	}
-
-
 }

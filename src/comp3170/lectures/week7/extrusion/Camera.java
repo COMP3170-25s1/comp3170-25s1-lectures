@@ -1,6 +1,7 @@
 package comp3170.lectures.week7.extrusion;
 
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 import comp3170.InputManager;
 import comp3170.SceneObject;
@@ -39,6 +40,11 @@ public class Camera extends SceneObject implements ICamera {
 	@Override
 	public Matrix4f getProjectionMatrix(Matrix4f dest) {
 		return camera.getProjectionMatrix(dest);
+	}
+
+	@Override
+	public Vector4f getDirection(Vector4f dest) {
+		return camera.getDirection(dest);
 	}
 
 	public void update(float deltaTime, InputManager input) {

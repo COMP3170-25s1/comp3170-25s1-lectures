@@ -4,12 +4,8 @@ import static comp3170.Math.TAU;
 import static comp3170.Math.cross;
 import static org.lwjgl.opengl.GL11.GL_FILL;
 import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
-import static org.lwjgl.opengl.GL11.GL_LINEAR;
-import static org.lwjgl.opengl.GL11.GL_LINEAR_MIPMAP_LINEAR;
 import static org.lwjgl.opengl.GL11.GL_REPEAT;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
@@ -19,10 +15,10 @@ import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL11.glPolygonMode;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 import java.io.IOException;
 
@@ -38,6 +34,8 @@ import comp3170.SceneObject;
 import comp3170.Shader;
 import comp3170.ShaderLibrary;
 import comp3170.TextureLibrary;
+import comp3170.lectures.common.cameras.ICamera;
+import comp3170.lectures.week7.extrusion.Scene;
 
 public class Ring extends SceneObject {
 
@@ -50,7 +48,8 @@ public class Ring extends SceneObject {
 	static final private String UV_VERTEX_SHADER = "uvVertex.glsl";
 	static final private String UV_FRAGMENT_SHADER = "uvFragment.glsl";
 
-	static final private String TEXTURE = "Red_Tiles_DIFF.jpg";
+	static final private String DIFFUSE_TEXTURE = "Red_Tiles_DIFF.jpg";
+	static final private String SPECULAR_TEXTURE = "Red_Tiles_SPEC.jpg";
 	
 	static final private int NSIDES = 100;
 	static final private float RADIUS = 1;
@@ -58,6 +57,7 @@ public class Ring extends SceneObject {
 
 	static final private Vector2f UV_MAX = new Vector2f(8, 1);
 	static final private float GAMMA = 2.2f;
+	static final private float SHININESS = 1f;
 
 	private Shader mainShader;
 	private Shader normalShader;
@@ -73,7 +73,8 @@ public class Ring extends SceneObject {
 	private int uvBuffer;
 	private int[] indices;
 	private int indexBuffer;
-	private int textureID;
+	private int diffuseTextureID;
+	private int specularTextureID;
 	
 	private Vector4f[] crossSection;
 	private Vector4f[] crossSectionColour;
@@ -126,7 +127,8 @@ public class Ring extends SceneObject {
 
 	private void loadTextures() {
 		try {
-			textureID = TextureLibrary.instance.loadTexture(TEXTURE);
+			diffuseTextureID = TextureLibrary.instance.loadTexture(DIFFUSE_TEXTURE);
+			specularTextureID = TextureLibrary.instance.loadTexture(SPECULAR_TEXTURE);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -135,8 +137,14 @@ public class Ring extends SceneObject {
 		}
 
 		// Wrap modes
+		glBindTexture(GL_TEXTURE_2D, diffuseTextureID);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // S is U
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // T is V
+
+		glBindTexture(GL_TEXTURE_2D, specularTextureID);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // S is U
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // T is V
+		
 //
 //		// Filtering
 //		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -265,8 +273,11 @@ public class Ring extends SceneObject {
 	private Matrix4f normalMatrix = new Matrix4f();
 	
 	private Vector3f ambientIntensity = new Vector3f(0.05f,0.05f,0.05f);
-	private Vector3f lightIntensity = new Vector3f(1.0f,1.0f,0.0f);
-	
+	private Vector3f lightIntensity = new Vector3f();
+	private Vector4f lightDirection = new Vector4f();
+
+	private Vector4f cameraDirection = new Vector4f();
+
 	@Override
 	protected void drawSelf(Matrix4f mvpMatrix) {
 		Shader shader = mainShader;
@@ -282,13 +293,25 @@ public class Ring extends SceneObject {
 		shader.setUniform("u_normalMatrix", normalMatrix);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureID);		
-		shader.setUniform("u_texture", 0);
+		glBindTexture(GL_TEXTURE_2D, diffuseTextureID);		
+		shader.setUniform("u_diffuseTexture", 0);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, specularTextureID);		
+		shader.setUniform("u_specularTexture", 1);
+		
+		shader.setUniform("u_shininess", SHININESS);
 		shader.setUniform("u_gamma", GAMMA);
 		
-		shader.setUniform("u_ambientIntensity", ambientIntensity);
-		shader.setUniform("u_lightIntensity", lightIntensity);
+		DirectionalLight light = Scene.theScene.getLight();
 		
+		shader.setUniform("u_ambientIntensity", ambientIntensity);
+		shader.setUniform("u_lightIntensity", light.getIntensity(lightIntensity));
+		shader.setUniform("u_lightDirection", light.getDirection(lightDirection));
+
+		ICamera camera = Scene.theScene.getCamera();
+		shader.setUniform("u_cameraDirection", camera.getDirection(cameraDirection));
+				
 		shader.setAttribute("a_position", vertexBuffer);
 		shader.setAttribute("a_normal", normalBuffer);
 		shader.setAttribute("a_colour", colourBuffer);

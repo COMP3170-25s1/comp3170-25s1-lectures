@@ -4,8 +4,9 @@ import org.joml.Matrix4f;
 
 import comp3170.InputManager;
 import comp3170.SceneObject;
+import comp3170.lectures.common.cameras.ICamera;
 import comp3170.lectures.common.sceneobjects.Axes3D;
-import comp3170.lectures.common.sceneobjects.Grid;
+import comp3170.lectures.week7.extrusion.sceneobjects.DirectionalLight;
 import comp3170.lectures.week7.extrusion.sceneobjects.Ring;
 
 public class Scene extends SceneObject {
@@ -13,6 +14,7 @@ public class Scene extends SceneObject {
 	public static Scene theScene;
 	private Camera camera;
 	private Ring ring;
+	private DirectionalLight light;
 	
 	public Scene() {
 		theScene = this;		
@@ -32,13 +34,25 @@ public class Scene extends SceneObject {
 		ring = new Ring();
 		ring.setParent(this);
 		
+		light = new DirectionalLight();
+		light.setParent(this);
+		
 		camera = new Camera();
 		camera.setParent(this);
 	}
 
+	public DirectionalLight getLight() {
+		return light;
+	}
+
+	public ICamera getCamera() {
+		return camera;
+	}
+	
 	public void update(float deltaTime, InputManager input) {
 		camera.update(deltaTime, input);
 		ring.update(deltaTime, input);
+		light.update(deltaTime, input);
 	}
 
 	private Matrix4f viewMatrix = new Matrix4f();

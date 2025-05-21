@@ -1,11 +1,12 @@
 package comp3170.lectures.common.cameras;
 
 import static comp3170.Math.TAU;
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_Z;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_END;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_PAGE_DOWN;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_PAGE_UP;
 
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 import comp3170.InputManager;
 import comp3170.SceneObject;
@@ -47,6 +48,12 @@ public class PerspectiveCamera extends SceneObject implements ICamera {
 		return dest;
 	}
 
+	@Override
+	public Vector4f getDirection(Vector4f dest) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
+	}
+
 	public void update(float deltaTime, InputManager input) {
 		if (input.isKeyDown(GLFW_KEY_PAGE_DOWN)) {
 			fovy += FOVY_CHANGE * deltaTime;
@@ -59,6 +66,7 @@ public class PerspectiveCamera extends SceneObject implements ICamera {
 		}
 
 	}
+
 
 
 }
