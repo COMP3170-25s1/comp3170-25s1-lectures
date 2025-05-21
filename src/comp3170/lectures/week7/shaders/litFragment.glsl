@@ -33,11 +33,12 @@ void main() {
     vec3 ambient = u_ambientIntensity * diffuseMaterial;
     vec3 diffuse = u_lightIntensity * diffuseMaterial * max(0, dot(n, s));
     vec3 specular = vec3(0);
+
+	float rDotV = 0;
     
     if (dot(s,n) > 0) {
-		//float rDotV = dot(r, v);
-		float rDotV = 0;
-    	vec3 specular = u_lightIntensity * specularMaterial * pow(max(0, rDotV), u_shininess); 
+		rDotV = dot(r, v);
+    	specular = u_lightIntensity * specularMaterial * pow(max(0, rDotV), u_shininess); 
     }
     
     vec3 intensity = ambient + diffuse + specular;
@@ -45,8 +46,6 @@ void main() {
     // return value in brightness space
     vec3 brightness = pow(intensity, vec3(1./u_gamma));		// B = I ^ (1/gamma)        
     
-//    o_colour = vec4(brightness,1);
-	
-	o_colour = r;
+    o_colour = vec4(brightness,1);
 }
 

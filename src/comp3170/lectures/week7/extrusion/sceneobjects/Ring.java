@@ -57,7 +57,7 @@ public class Ring extends SceneObject {
 
 	static final private Vector2f UV_MAX = new Vector2f(8, 1);
 	static final private float GAMMA = 2.2f;
-	static final private float SHININESS = 1f;
+	static final private float SHININESS = 100f;
 
 	private Shader mainShader;
 	private Shader normalShader;
