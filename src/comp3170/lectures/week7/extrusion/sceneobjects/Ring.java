@@ -45,6 +45,9 @@ public class Ring extends SceneObject {
 	static final private String NORMAL_VERTEX_SHADER = "normalVertex.glsl";
 	static final private String NORMAL_FRAGMENT_SHADER = "normalFragment.glsl";
 
+	static final private String GEOM_VERTEX_SHADER = "geomVertex.glsl";
+	static final private String GEOM_FRAGMENT_SHADER = "geomFragment.glsl";
+
 	static final private String UV_VERTEX_SHADER = "uvVertex.glsl";
 	static final private String UV_FRAGMENT_SHADER = "uvFragment.glsl";
 
@@ -61,6 +64,7 @@ public class Ring extends SceneObject {
 
 	private Shader mainShader;
 	private Shader normalShader;
+	private Shader geomShader;
 	private Shader uvShader;
 
 	private Vector4f[] vertices;
@@ -83,6 +87,7 @@ public class Ring extends SceneObject {
 	public Ring() {
 		mainShader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
 		normalShader = ShaderLibrary.instance.compileShader(NORMAL_VERTEX_SHADER, NORMAL_FRAGMENT_SHADER);
+		geomShader = ShaderLibrary.instance.compileShader(GEOM_VERTEX_SHADER, GEOM_FRAGMENT_SHADER);
 		uvShader = ShaderLibrary.instance.compileShader(UV_VERTEX_SHADER, UV_FRAGMENT_SHADER);
 
 		// create the curve
@@ -232,10 +237,8 @@ public class Ring extends SceneObject {
 			matrix.setColumn(2, kAxis);
 			matrix.setColumn(3, point);
 			
-//			matrix.scaleLocal(0.5f, 1, 1);
-//			matrix.scale(0.5f, 1, 1);			
 			matrix.scale(SCALE);
-//			matrix.rotateZ(i * TAU / NSIDES);
+			matrix.rotateZ(i * TAU / NSIDES);
 			
 			// convert the matrix to a normal matrix to solve the normal stretching issue
 			matrix.normal(normalMatrix);
@@ -279,7 +282,19 @@ public class Ring extends SceneObject {
 	private Vector4f cameraDirection = new Vector4f();
 
 	@Override
-	protected void drawSelf(Matrix4f mvpMatrix) {
+	protected void drawSelf(Matrix4f mvpMatrix, int pass) {
+		
+		switch (pass) {
+		case 0:
+			drawSelfLit(mvpMatrix);
+			break;
+		case 1:
+			drawSelfGeom(mvpMatrix);
+			break;
+		}
+	}
+
+	private void drawSelfLit(Matrix4f mvpMatrix) {
 		Shader shader = mainShader;
 		shader.setStrict(false);
 
@@ -319,14 +334,33 @@ public class Ring extends SceneObject {
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);		
-//		glDrawArrays(GL_POINTS, 0, vertices.length);
-		
+		glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
 	}
 
+	private void drawSelfGeom(Matrix4f mvpMatrix) {
+		Shader shader = geomShader;
+		shader.setStrict(false);
+		shader.enable();
+
+		// convert the model matrix to a normal matrix to solve the normal stretching issue
+		getModelToWorldMatrix(modelMatrix);	// MODEL -> WORLD
+		modelMatrix.normal(normalMatrix);
+		
+		shader.setUniform("u_mvpMatrix", mvpMatrix);
+		shader.setUniform("u_normalMatrix", normalMatrix);
+
+		shader.setAttribute("a_position", vertexBuffer);
+		shader.setAttribute("a_normal", normalBuffer);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
+	}
+	
 	private static float ROTATION_SPEED = TAU / 4;
 	
 	public void update(float deltaTime, InputManager input) {
+		
 		//getMatrix().rotateX(ROTATION_SPEED * deltaTime);		
 	}
 	

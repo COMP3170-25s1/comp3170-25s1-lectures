@@ -20,7 +20,7 @@ public class OrbitingArmature extends SceneObject {
 	final static float MOVEMENT_SPEED = 1;
 
 	private float distance;
-	private Vector3f angle = new Vector3f(-TAU / 4, 0, 0);
+	private Vector3f angle = new Vector3f(0, 0, 0);
 
 	public OrbitingArmature(float distance) {
 		this.distance = distance;

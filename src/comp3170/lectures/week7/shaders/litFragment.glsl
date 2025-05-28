@@ -34,11 +34,8 @@ void main() {
     vec3 diffuse = u_lightIntensity * diffuseMaterial * max(0, dot(n, s));
     vec3 specular = vec3(0);
 
-	float rDotV = 0;
-    
     if (dot(s,n) > 0) {
-		rDotV = dot(r, v);
-    	specular = u_lightIntensity * specularMaterial * pow(max(0, rDotV), u_shininess); 
+    	specular = u_lightIntensity * specularMaterial * pow(max(0, dot(r, v)), u_shininess); 
     }
     
     vec3 intensity = ambient + diffuse + specular;
