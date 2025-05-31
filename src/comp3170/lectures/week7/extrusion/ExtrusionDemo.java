@@ -48,9 +48,6 @@ public class ExtrusionDemo implements IWindowListener {
 
 	@Override
 	public void init() {
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClearDepth(1);
-
 		glDisable(GL_PROGRAM_POINT_SIZE);
 		glPointSize(5);
 

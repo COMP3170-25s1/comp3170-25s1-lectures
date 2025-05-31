@@ -39,8 +39,8 @@ import comp3170.lectures.week7.extrusion.Scene;
 
 public class Ring extends SceneObject {
 
-	static final private String VERTEX_SHADER = "litVertex.glsl";
-	static final private String FRAGMENT_SHADER = "litFragment.glsl";
+	static final private String VERTEX_SHADER = "shadeVertex.glsl";
+	static final private String FRAGMENT_SHADER = "shadeFragment.glsl";
 
 	static final private String NORMAL_VERTEX_SHADER = "normalVertex.glsl";
 	static final private String NORMAL_FRAGMENT_SHADER = "normalFragment.glsl";
@@ -305,6 +305,7 @@ public class Ring extends SceneObject {
 		modelMatrix.normal(normalMatrix);
 		
 		shader.setUniform("u_mvpMatrix", mvpMatrix);
+		shader.setUniform("u_modelMatrix", modelMatrix);
 		shader.setUniform("u_normalMatrix", normalMatrix);
 
 		glActiveTexture(GL_TEXTURE0);

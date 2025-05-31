@@ -29,6 +29,7 @@ public class DirectionalLight extends SceneObject {
 	private int vertexBuffer;
 
 	private Vector3f intensity = new Vector3f(1,1,1);
+	private boolean isDebugMode = false;
 	
 	public DirectionalLight() {
 		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
@@ -41,18 +42,23 @@ public class DirectionalLight extends SceneObject {
 		vertexBuffer = GLBuffers.createBuffer(vertices);	
 	}
 
+	public void setDebug(boolean debug) {
+		isDebugMode  = debug;
+	}
 	
 	@Override
 	protected void drawSelf(Matrix4f mvpMatrix) {
-		shader.setStrict(false);
-		shader.enable();
+		if (isDebugMode) {
+			shader.setStrict(false);
+			shader.enable();
 
-		shader.setUniform("u_mvpMatrix", mvpMatrix);
-		shader.setUniform("u_intensity", intensity);
-		shader.setAttribute("a_position", vertexBuffer);
+			shader.setUniform("u_mvpMatrix", mvpMatrix);
+			shader.setUniform("u_intensity", intensity);
+			shader.setAttribute("a_position", vertexBuffer);
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glDrawArrays(GL_LINES, 0, vertices.length);		
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			glDrawArrays(GL_LINES, 0, vertices.length);					
+		}
 	}
 
 	

@@ -1,6 +1,7 @@
 #version 410
 
-uniform sampler2D u_texture;
+uniform sampler2D u_colourTexture;
+uniform sampler2D u_geomTexture;
 uniform vec2 u_resolution;	// width x height in pixels
 
 in vec2 v_texcoord;	// UV 
@@ -17,11 +18,11 @@ void main() {
 	
 	vec2 delta = 1. / u_resolution; // 1/w, 1/h 
 
-	vec4 p = texture(u_texture, v_texcoord);
-	vec4 pLeft  = texture(u_texture, v_texcoord + vec2(-delta.x,0));
-	vec4 pRight = texture(u_texture, v_texcoord + vec2(+delta.x,0));
-	vec4 pAbove = texture(u_texture, v_texcoord + vec2(0,+delta.y));
-	vec4 pBelow = texture(u_texture, v_texcoord + vec2(0,-delta.y));
+	vec4 p = texture(u_geomTexture, v_texcoord);
+	vec4 pLeft  = texture(u_geomTexture, v_texcoord + vec2(-delta.x,0));
+	vec4 pRight = texture(u_geomTexture, v_texcoord + vec2(+delta.x,0));
+	vec4 pAbove = texture(u_geomTexture, v_texcoord + vec2(0,+delta.y));
+	vec4 pBelow = texture(u_geomTexture, v_texcoord + vec2(0,-delta.y));
 
 	// process normals
 	
@@ -53,8 +54,11 @@ void main() {
 	
 	float dd = 1-max(max(ddLeft, ddRight),max(ddAbove, ddBelow));
 	
-	float c = dd * dp;
+	vec3 s = vec3(0,1,0);
 	
-	o_colour = vec4(c,c,c,1);
+	vec3 c = texture(u_colourTexture, v_texcoord).rgb;
+	//c = c * dd * dp;	
+	
+	o_colour = vec4(c,1);
 }
 

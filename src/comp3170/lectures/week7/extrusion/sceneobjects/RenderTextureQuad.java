@@ -9,6 +9,7 @@ import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL11.glPolygonMode;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 import org.joml.Matrix4f;
@@ -30,8 +31,8 @@ public class RenderTextureQuad extends SceneObject {
 	private Vector2f[] uvs;
 	private int uvBuffer;
 
-	private int renderTexture;
-	private int frameBuffer;
+	private int[] renderTextures;
+	private int[] frameBuffers;
 
 	private Vector2f resolution ;
 	
@@ -40,10 +41,15 @@ public class RenderTextureQuad extends SceneObject {
 		resolution = new Vector2f(width, height);
 		
 		createQuad();
-		renderTexture = TextureLibrary.instance.createRenderTexture(width, height, GL_RGBA);
+		renderTextures = new int[2];
+		frameBuffers = new int[2];
+
+		renderTextures[0] = TextureLibrary.instance.createRenderTexture(width, height, GL_RGBA);
+		renderTextures[1] = TextureLibrary.instance.createRenderTexture(width, height, GL_RGBA);
 
 		try {
-			frameBuffer = GLBuffers.createFrameBuffer(renderTexture);
+			frameBuffers[0] = GLBuffers.createFrameBuffer(renderTextures[0]);
+			frameBuffers[1] = GLBuffers.createFrameBuffer(renderTextures[1]);
 		} catch (OpenGLException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -51,12 +57,12 @@ public class RenderTextureQuad extends SceneObject {
 
 	}
 
-	public int getRenderTexture() {
-		return renderTexture;
+	public int getRenderTexture(int buffer) {
+		return renderTextures[buffer];
 	}
 
-	public int getFrameBuffer() {
-		return frameBuffer;
+	public int getFrameBuffer(int buffer) {
+		return frameBuffers[buffer];
 	}
 
 	private void createQuad() {
@@ -102,7 +108,8 @@ public class RenderTextureQuad extends SceneObject {
 	@Override
 	public void drawSelf(Matrix4f mvpMatrix) {
 		shader.enable();
-
+		shader.setStrict(false);
+		
 		// no MVP matrix, as the quad is draw directly in NDC space
 
 		// vertex attributes
@@ -111,8 +118,12 @@ public class RenderTextureQuad extends SceneObject {
 
 		// textures
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, renderTexture);
-		shader.setUniform("u_texture", 0);
+		glBindTexture(GL_TEXTURE_2D, renderTextures[0]);
+		shader.setUniform("u_colourTexture", 0);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, renderTextures[1]);
+		shader.setUniform("u_geomTexture", 1);
 
 		shader.setUniform("u_resolution", resolution);
 		

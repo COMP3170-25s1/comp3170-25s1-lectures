@@ -3,6 +3,8 @@ package comp3170.lectures.week7.extrusion;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.glClearDepth;
 import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
 import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
@@ -41,8 +43,8 @@ public class Scene extends SceneObject {
 //		Grid grid = new Grid(10);
 //		grid.setParent(this);
 
-		Axes3D axes = new Axes3D();
-		axes.setParent(this);
+//		Axes3D axes = new Axes3D();
+//		axes.setParent(this);
 		
 		ring = new Ring();
 		ring.setParent(this);
@@ -84,14 +86,23 @@ public class Scene extends SceneObject {
 		camera.getProjectionMatrix(projectionMatrix);		
 		projectionMatrix.mul(viewMatrix, mvpMatrix); // MVP = P * V
 		
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClearDepth(1);
+
+		// Pass 0 - Draw the colour to the render texture 
+		
+		glBindFramebuffer(GL_FRAMEBUFFER, quad.getFrameBuffer(0));
+		glClear(GL_COLOR_BUFFER_BIT);		
+		glClear(GL_DEPTH_BUFFER_BIT);
+		draw(mvpMatrix, 0);	
+
 		// Pass 1 - Draw the geometry to the render texture 
 		
-		int frameBuffer = quad.getFrameBuffer();
-		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, quad.getFrameBuffer(1));
 		glClear(GL_COLOR_BUFFER_BIT);		
 		glClear(GL_DEPTH_BUFFER_BIT);
 		draw(mvpMatrix, 1);	
-		
+
 		// Pass 2 - Draw the scene to the screen using the edge shader 
 		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
